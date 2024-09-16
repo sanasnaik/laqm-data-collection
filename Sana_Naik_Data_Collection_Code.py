@@ -45,7 +45,7 @@ def data_collect():
 
 def collect_lockin_data():
     
-    voltageincrement, timevalue = 0.1, 0
+    timevalue = 0
     fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
     print(fieldnames)
     
@@ -54,7 +54,7 @@ def collect_lockin_data():
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
         
-    while timevalue < 172800:  # 48hrs
+    while True:
     
         channel1 = float(my_instrument.query_ascii_values("OUTP? 1")[0])
         freq = my_instrument.query_ascii_values('FREQ?')[0]
@@ -78,8 +78,7 @@ def collect_lockin_data():
         time.sleep(2)
         timevalue += 2
         timevalue = round(timevalue, 2)
-        voltageincrement += 0.3
-        plot('Time', 'Channel1(X)')  # Plotting Time vs Channel1(X)
+        plot('Time', 'Channel1(X)')
 
 def collect_keithley_data():
     
