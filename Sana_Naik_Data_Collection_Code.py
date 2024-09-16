@@ -29,7 +29,7 @@ my_instrument, instrument_type = select_instrument()
 # Create initial CSV file
 def create_file():
     
-    with open(f"CSV Data Outputs/{current_time}.csv", mode='w', newline="") as csv_file:
+    with open(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv", mode='w', newline="") as csv_file:
         
         writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)', 'Sensitivity', 'Temperature', 
@@ -49,7 +49,7 @@ def collect_lockin_data():
     fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
     print(fieldnames)
     
-    with open(f"CSV Data Outputs/{current_time}.csv", mode='w') as csv_file:
+    with open(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv", mode='w') as csv_file:
         
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
@@ -64,7 +64,7 @@ def collect_lockin_data():
         values = [timevalue, voltage, freq, channel1, channel2]
         print(values)
     
-        with open(f"CSV Data Outputs/{current_time}.csv", mode='a', newline="") as csv_file:
+        with open(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv", mode='a', newline="") as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             info = {
                 "Time": timevalue,
@@ -100,7 +100,7 @@ def collect_keithley_data():
 
     fieldnames = ["Time", "Temperature", "Voltage", "PID", "RampRate", "Setpoint"]
 
-    with open(f"CSV Data Outputs/{current_time}.csv", mode='w') as csv_file:
+    with open(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv", mode='w') as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
 
@@ -112,7 +112,7 @@ def collect_keithley_data():
         temp = my_instrument.query('TRAC:DATA?').replace('+', '').split(',')[0]
         values = [round(timevalue + (time.time() - time1), 2), temp]
 
-        with open(f"CSV Data Outputs/{current_time}.csv", mode='a') as csv_file:
+        with open(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv", mode='a') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             info = {
                 "Time": values[0],
@@ -129,7 +129,7 @@ def collect_keithley_data():
     my_instrument.write("TRAC:CLE")
 
 def plot(xvar, yvar):
-    data = pd.read_csv(f"CSV Data Outputs/{current_time}.csv")
+    data = pd.read_csv(f"C:\\Users\laqm\Documents\CSV Data Outputs\{current_time}.csv")
     plt.plot(data[xvar], data[yvar])
     plt.xlabel(xvar)
     plt.ylabel(yvar)
