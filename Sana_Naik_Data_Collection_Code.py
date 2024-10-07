@@ -12,6 +12,7 @@ import csv
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import datetime
 import threading
 import tkinter as tk
@@ -24,6 +25,13 @@ my_instrument = pyvisa.ResourceManager().open_resource('GPIB0::8::INSTR')
 
 # Collects data into CSV and plots
 running = False
+data = {  # dictionary to store datapoints
+    'Time': [],
+    'Voltage': [],
+    'Frequency': [],
+    'Channel1(X)': [],
+    'Channel2(Y)': []
+}
 
 def run():
     global running
@@ -49,12 +57,20 @@ def run():
             "Channel2(Y)": float(channel2)
         }
 
+        # Append data for plotting
+        data['Time'].append(timevalue)
+        data['Voltage'].append(voltage)
+        data['Frequency'].append(freq)
+        data['Channel1(X)'].append(float(channel1))
+        data['Channel2(Y)'].append(float(channel2))
+
         with open(csv_file_path, mode='a', newline="") as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             csv_writer.writerow(info)
 
         # GUI update
         root.after(0, update_output_text, timevalue, voltage, freq, channel1, channel2)
+        root.after(0, update_plot)
 
         time.sleep(2)
         timevalue += 2
@@ -63,61 +79,96 @@ def update_output_text(timevalue, voltage, freq, channel1, channel2):
     text = output_text.cget("text") + f"\n{timevalue}, {voltage}, {freq}, {float(channel1)}, {float(channel2)}"
     output_text.configure(text=text)
 
+def update_plot():
+    ax.clear()
+    ax.plot(data['Time'], data['Channel1(X)'])
+    ax.set_xlabel('Time (seconds)')
+    ax.set_ylabel('Channel1(X)')
+    ax.set_title('Channel1(X) vs. Time')
+    canvas.draw()
+
 def start_run():
     threading.Thread(target=run, daemon=True).start()
 
-def plot(xvar, yvar):  
-    data = pd.read_csv(csv_file_path)
-    plt.plot(data[xvar], data[yvar])
-    plt.xlabel(xvar)
-    plt.ylabel(yvar)
-    plt.show()
-    
 def name_btn_clicked():
     global csv_file_path
     current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
-    csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{name_entry.get()} {current_time}.csv"
+    csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{name_entry.get()}{current_time}.csv"
     filepath_text.configure(text=csv_file_path)
 
 def stop():
     global running
     running = False
-    
+
 # Driver code for GUI
 root = tk.Tk()
-
 root.title("LAQM Lock-In Amplifier Data Visualizer")
 root.geometry('960x540')
 
-name_text = tk.Label(root, text="Enter your name (this will go in the CSV file name)")
-name_text.grid(column=0, row=0)
+# Name frame
+name_frame = tk.Frame(root, padx=20, pady=20)  
+name_frame.pack()
 
-name_entry = tk.Entry(root, width=10)
-name_entry.grid(column=1, row=0)
+name_text = tk.Label(name_frame, text="Enter your name (this will go in the CSV file name)")
+name_text.pack()
 
-name_btn = tk.Button(root, text="Enter", command=name_btn_clicked)
-name_btn.grid(column=2, row=0)
+name_entry = tk.Entry(name_frame, width=10)
+name_entry.pack()
 
-start_text = tk.Label(root, text="Begin Program?")
-start_text.grid(column=0, row=1)
+name_btn = tk.Button(name_frame, text="Enter", command=name_btn_clicked)
+name_btn.pack(pady=5)
 
-start_btn = tk.Button(root, text="Start", command=start_run)
-start_btn.grid(column=1, row=1)
+filepath_text = tk.Label(name_frame, text=csv_file_path)
+filepath_text.pack()
 
-stop_btn = tk.Button(root, text="Stop", command=stop)
-stop_btn.grid(column=2, row=1)
+# Start frame
+start_frame = tk.Frame(root, padx=20, pady=20)
+start_frame.pack()
 
-filepath_text = tk.Label(root, text=csv_file_path)
-filepath_text.grid(column=3, row=1)
+start_text = tk.Label(start_frame, text="Begin Program?")
+start_text.pack()
 
-output_text = tk.Label(root, text="Output values:")
-output_text.grid(column=0, row=2)
+start_btn = tk.Button(start_frame, text="Start", command=start_run)
+start_btn.pack(side="left", padx=5)
 
-# Plot
-frame = tk.Frame(root)
-plot_title = tk.Label(text = "Plot Here")
-plot_title.config(font = ("Courier, 32"))
-plot_title.grid(column = 5, row = 5)
-frame.grid(column = 5, row = 10)
+stop_btn = tk.Button(start_frame, text="Stop", command=stop)
+stop_btn.pack(side="left", padx=5)
+
+# Output frame
+output_frame = tk.Frame(root, padx=10, pady=20)
+output_frame.pack()
+
+# Left frame
+left_frame = tk.Frame(output_frame, padx=10, pady=20)
+left_frame.pack(side="left")
+
+output_title = tk.Label(left_frame, text="Output Data:")
+output_title.config(font=16)
+output_title.pack()
+
+output_text = tk.Label(left_frame, text="")
+output_text.pack()
+
+# Right frame
+right_frame = tk.Frame(output_frame, padx=10, pady=20)
+right_frame.pack(side="right")
+
+# Plotting stuff
+plot_title = tk.Label(right_frame, text="Live Data Plot")
+plot_title.config(font=(16))
+plot_title.pack()
+
+# Matplotlib figure and axis
+fig, ax = plt.subplots()
+canvas = FigureCanvasTkAgg(fig, master=right_frame)
+canvas.get_tk_widget().pack()
+
+# Navigation toolbar
+toolbar_frame = tk.Frame(right_frame)
+toolbar_frame.pack(fill=tk.X)
+toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
+toolbar.update()
+
+canvas._tkcanvas.pack(fill=tk.BOTH, expand=True)
 
 root.mainloop()
