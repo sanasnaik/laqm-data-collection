@@ -11,6 +11,7 @@ import pyvisa
 import csv
 import time
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import datetime
@@ -22,6 +23,7 @@ current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
 csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{current_time}.csv"
 fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
 my_instrument = pyvisa.ResourceManager().open_resource('GPIB0::8::INSTR')
+plot_type = "line_graph"
 
 # Collects data into CSV and plots
 running = False
@@ -69,23 +71,29 @@ def run():
             csv_writer.writerow(info)
 
         # GUI update
+        if plot_type == "line_graph":
+            ax.plot(data['Time'], data['Channel1(X)'], color = "blue")
+        elif plot_type == "scatter_plot":
+            ax.scatter(data['Time'], data['Channel1(X)'], color = "blue")
+        canvas.draw()
+        
         root.after(0, update_output_text, timevalue, voltage, freq, channel1, channel2)
-        root.after(0, update_plot)
-
+            
         time.sleep(2)
         timevalue += 2
 
 def update_output_text(timevalue, voltage, freq, channel1, channel2):
     text = output_text.cget("text") + f"\n{timevalue}, {voltage}, {freq}, {float(channel1)}, {float(channel2)}"
     output_text.configure(text=text)
-
-def update_plot():
-    ax.clear()
-    ax.plot(data['Time'], data['Channel1(X)'])
-    ax.set_xlabel('Time (seconds)')
-    ax.set_ylabel('Channel1(X)')
-    ax.set_title('Channel1(X) vs. Time')
-    canvas.draw()
+    
+def change_plot():
+    global plot_type
+    if plot_type == "line_graph":
+        plot_type = "scatter_plot"
+        plot_btn.configure(text = "Line Graph")
+    elif plot_type == "scatter_plot":
+        plot_type = "line_graph"
+        plot_btn.configure(text = "Scatter Plot")
 
 def start_run():
     threading.Thread(target=run, daemon=True).start()
@@ -99,11 +107,42 @@ def name_btn_clicked():
 def stop():
     global running
     running = False
+    
+# Snap mouse to nearest data point in plot
+def on_mouse_move(event):
+    if event.inaxes is not None:
+        mouse_x = event.xdata
+        mouse_y = event.ydata
+        
+        # Calculate the distance from each data point
+        distances = np.sqrt((np.array(data['Channel1(X)']) - mouse_y) ** 2 + (np.array(data['Time']) - mouse_x) ** 2)
+        nearest_index = np.argmin(distances)  # index of the nearest point
+        
+        # Clear graph and redraw
+        ax.clear()
+        if plot_type == "line_graph":
+            ax.plot(data['Time'], data['Channel1(X)'])
+        elif plot_type == "scatter_plot":
+            ax.scatter(data['Time'], data['Channel1(X)'])
+        
+        # Highlight the nearest point
+        ax.plot(data['Time'][nearest_index], data['Channel1(X)'][nearest_index], 'ro')
+        ax.annotate(f'({data["Time"][nearest_index]}, {data["Channel1(X)"][nearest_index]})',
+                    (data['Time'][nearest_index], data['Channel1(X)'][nearest_index]),
+                    textcoords="offset points", 
+                    xytext=(0,10), 
+                    ha='center', fontsize=8, color='red')
+        
+        ax.set_xlabel('Time (seconds)')
+        ax.set_ylabel('Channel1(X)')
+        ax.set_title('Channel1(X) vs. Time')
+        
+        canvas.draw()
 
 # Driver code for GUI
 root = tk.Tk()
 root.title("LAQM Lock-In Amplifier Data Visualizer")
-root.geometry('960x540')
+root.geometry('1600x900')
 
 # Name frame
 name_frame = tk.Frame(root, padx=20, pady=20)  
@@ -168,6 +207,19 @@ toolbar_frame = tk.Frame(right_frame)
 toolbar_frame.pack(fill=tk.X)
 toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
 toolbar.update()
+
+# Set up plot axes + title
+ax.plot(data['Time'], data['Channel1(X)'])
+ax.set_xlabel('Time (seconds)')
+ax.set_ylabel('Channel1(X)')
+ax.set_title('Channel1(X) vs. Time')
+
+# Scatter plot and line graph options
+plot_btn = tk.Button(toolbar_frame, text = "Scatter Plot", command = change_plot)
+plot_btn.pack()
+
+# Cursor snap to data point
+fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
 
 canvas._tkcanvas.pack(fill=tk.BOTH, expand=True)
 
