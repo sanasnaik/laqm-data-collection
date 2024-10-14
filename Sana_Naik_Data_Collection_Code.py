@@ -17,6 +17,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import datetime
 import threading
 import tkinter as tk
+from tkinter import ttk
 
 # Define constants
 current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
@@ -24,6 +25,7 @@ csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{current_time}.c
 fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
 my_instrument = pyvisa.ResourceManager().open_resource('GPIB0::8::INSTR')
 plot_type = "line_graph"
+autoscale = True
 
 # Collects data into CSV and plots
 running = False
@@ -46,8 +48,8 @@ def run():
         csv_writer.writeheader()
 
     while running:
-        freq = my_instrument.query_ascii_values('FREQ?')[0]
         voltage = my_instrument.query_ascii_values('SLVL?')[0]
+        freq = my_instrument.query_ascii_values('FREQ?')[0]
         channel1 = my_instrument.query_ascii_values("OUTP? 1")[0]
         channel2 = my_instrument.query_ascii_values("OUTP? 2")[0]
 
@@ -71,6 +73,7 @@ def run():
             csv_writer.writerow(info)
 
         # GUI update
+        ax.autoscale(autoscale)
         if plot_type == "line_graph":
             ax.plot(data['Time'], data['Channel1(X)'], color = "blue")
         elif plot_type == "scatter_plot":
@@ -83,9 +86,8 @@ def run():
         timevalue += 2
 
 def update_output_text(timevalue, voltage, freq, channel1, channel2):
-    text = output_text.cget("text") + f"\n{timevalue}, {voltage}, {freq}, {float(channel1)}, {float(channel2)}"
-    output_text.configure(text=text)
-    
+    tree.insert("", tk.END, values=(timevalue, voltage, freq, channel1, channel2))
+
 def change_plot():
     global plot_type
     if plot_type == "line_graph":
@@ -118,13 +120,6 @@ def on_mouse_move(event):
         distances = np.sqrt((np.array(data['Channel1(X)']) - mouse_y) ** 2 + (np.array(data['Time']) - mouse_x) ** 2)
         nearest_index = np.argmin(distances)  # index of the nearest point
         
-        # Clear graph and redraw
-        ax.clear()
-        if plot_type == "line_graph":
-            ax.plot(data['Time'], data['Channel1(X)'])
-        elif plot_type == "scatter_plot":
-            ax.scatter(data['Time'], data['Channel1(X)'])
-        
         # Highlight the nearest point
         ax.plot(data['Time'][nearest_index], data['Channel1(X)'][nearest_index], 'ro')
         ax.annotate(f'({data["Time"][nearest_index]}, {data["Channel1(X)"][nearest_index]})',
@@ -139,16 +134,23 @@ def on_mouse_move(event):
         
         canvas.draw()
 
-# Driver code for GUI
+def toggle_autoscale():
+    global autoscale
+    if autoscale:
+        autoscale = False
+    else:
+        autoscale = True
+
+# --------------------------- Driver code for GUI --------------------------- #
 root = tk.Tk()
 root.title("LAQM Lock-In Amplifier Data Visualizer")
 root.geometry('1600x900')
 
 # Name frame
 name_frame = tk.Frame(root, padx=20, pady=20)  
-name_frame.pack()
+name_frame.pack(pady = 50)
 
-name_text = tk.Label(name_frame, text="Enter your name (this will go in the CSV file name)")
+name_text = tk.Label(name_frame, text="Enter your name (this will go in the CSV file name)", font = 16)
 name_text.pack()
 
 name_entry = tk.Entry(name_frame, width=10)
@@ -164,35 +166,50 @@ filepath_text.pack()
 start_frame = tk.Frame(root, padx=20, pady=20)
 start_frame.pack()
 
-start_text = tk.Label(start_frame, text="Begin Program?")
+start_text = tk.Label(start_frame, text="Begin Program?", font = 20, justify = "center")
 start_text.pack()
 
-start_btn = tk.Button(start_frame, text="Start", command=start_run)
+start_btn = tk.Button(start_frame, text="Start", command=start_run, font = 10)
 start_btn.pack(side="left", padx=5)
 
-stop_btn = tk.Button(start_frame, text="Stop", command=stop)
-stop_btn.pack(side="left", padx=5)
+stop_btn = tk.Button(start_frame, text="Stop", command=stop, font = 10)
+stop_btn.pack(side="right", padx=5)
 
-# Output frame
+# ----------------------- Output Frame ----------------------- #
 output_frame = tk.Frame(root, padx=10, pady=20)
 output_frame.pack()
 
 # Left frame
 left_frame = tk.Frame(output_frame, padx=10, pady=20)
-left_frame.pack(side="left")
+left_frame.pack(side="left", padx = 0)
 
-output_title = tk.Label(left_frame, text="Output Data:")
-output_title.config(font=16)
+output_title = tk.Label(left_frame, text="Output Data", font = 16)
 output_title.pack()
 
-output_text = tk.Label(left_frame, text="")
-output_text.pack()
+# Data frame
+data_frame = tk.Frame(left_frame, padx = 10, pady = 0)
+data_frame.pack()
+
+# Table of data
+tree = ttk.Treeview(data_frame, columns = ("Time", "Voltage", "Frequency", "Channel1(X)", "Channel2(Y)"), show="headings")
+tree.heading("Time", text = "Time")
+tree.heading("Voltage", text = "Voltage")
+tree.heading("Frequency", text = "Frequency")
+tree.heading("Channel1(X)", text = "Channel1(X)")
+tree.heading("Channel2(Y)", text = "Channel2(Y)")
+
+# Scrollbar
+vsb = ttk.Scrollbar(data_frame, command = tree.yview)
+vsb.pack(side = 'right', fill = 'y')
+tree.configure(yscrollcommand=vsb.set)
+
+tree.pack(fill = 'both', expand = True)
 
 # Right frame
 right_frame = tk.Frame(output_frame, padx=10, pady=20)
 right_frame.pack(side="right")
 
-# Plotting stuff
+# ----------------------- Plotting stuff ----------------------- #
 plot_title = tk.Label(right_frame, text="Live Data Plot")
 plot_title.config(font=(16))
 plot_title.pack()
@@ -209,6 +226,7 @@ toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
 toolbar.update()
 
 # Set up plot axes + title
+ax.autoscale(autoscale)
 ax.plot(data['Time'], data['Channel1(X)'])
 ax.set_xlabel('Time (seconds)')
 ax.set_ylabel('Channel1(X)')
@@ -217,6 +235,10 @@ ax.set_title('Channel1(X) vs. Time')
 # Scatter plot and line graph options
 plot_btn = tk.Button(toolbar_frame, text = "Scatter Plot", command = change_plot)
 plot_btn.pack()
+
+# Autoscaling
+autoscale_btn = tk.Button(toolbar_frame, text = "Toggle Autoscale", command = toggle_autoscale)
+autoscale_btn.pack()
 
 # Cursor snap to data point
 fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
