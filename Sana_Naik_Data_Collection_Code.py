@@ -86,10 +86,15 @@ def run():
         timevalue += 2
 
 def update_output_text(timevalue, voltage, freq, channel1, channel2):
-    tree.insert("", tk.END, values=(timevalue, voltage, freq, channel1, channel2))
+    tree.insert("", 0, values=(timevalue, voltage, freq, channel1, channel2))
 
 def change_plot():
     global plot_type
+    global autoscale
+    ax.clear()
+    if autoscale == False:
+        ax.set_xlim(ax.get_xlim())
+        ax.set_ylim(ax.get_ylim())
     if plot_type == "line_graph":
         plot_type = "scatter_plot"
         plot_btn.configure(text = "Line Graph")
@@ -242,6 +247,7 @@ autoscale_btn.pack()
 
 # Cursor snap to data point
 fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
+
 
 canvas._tkcanvas.pack(fill=tk.BOTH, expand=True)
 
