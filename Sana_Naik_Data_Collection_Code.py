@@ -91,10 +91,12 @@ def update_output_text(timevalue, voltage, freq, channel1, channel2):
 def change_plot():
     global plot_type
     global autoscale
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
     ax.clear()
     if autoscale == False:
-        ax.set_xlim(ax.get_xlim())
-        ax.set_ylim(ax.get_ylim())
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
     if plot_type == "line_graph":
         plot_type = "scatter_plot"
         plot_btn.configure(text = "Line Graph")
@@ -125,7 +127,21 @@ def on_mouse_move(event):
         distances = np.sqrt((np.array(data['Channel1(X)']) - mouse_y) ** 2 + (np.array(data['Time']) - mouse_x) ** 2)
         nearest_index = np.argmin(distances)  # index of the nearest point
         
-        # Highlight the nearest point
+        # Highlight the nearest point, clear the last one
+        global autoscale
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
+        ax.clear()
+        if autoscale == False:
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
+        ax.autoscale(autoscale)
+        if plot_type == "line_graph":
+            ax.plot(data['Time'], data['Channel1(X)'], color = "blue")
+        elif plot_type == "scatter_plot":
+            ax.scatter(data['Time'], data['Channel1(X)'], color = "blue")
+        canvas.draw()
+        
         ax.plot(data['Time'][nearest_index], data['Channel1(X)'][nearest_index], 'ro')
         ax.annotate(f'({data["Time"][nearest_index]}, {data["Channel1(X)"][nearest_index]})',
                     (data['Time'][nearest_index], data['Channel1(X)'][nearest_index]),
@@ -197,7 +213,7 @@ data_frame.pack()
 
 # Table of data
 tree = ttk.Treeview(data_frame, columns = ("Time", "Voltage", "Frequency", "Channel1(X)", "Channel2(Y)"), show="headings")
-tree.heading("Time", text = "Time")
+tree.heading("Time", text = "Time (Seconds)")
 tree.heading("Voltage", text = "Voltage")
 tree.heading("Frequency", text = "Frequency")
 tree.heading("Channel1(X)", text = "Channel1(X)")
