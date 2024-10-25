@@ -162,6 +162,7 @@ def toggle_autoscale():
     else:
         autoscale = True
 
+
 # --------------------------- Driver code for GUI --------------------------- #
 root = tk.Tk()
 root.title("LAQM Lock-In Amplifier Data Visualizer")
@@ -219,12 +220,19 @@ tree.heading("Frequency", text = "Frequency")
 tree.heading("Channel1(X)", text = "Channel1(X)")
 tree.heading("Channel2(Y)", text = "Channel2(Y)")
 
+tree.column("Time", width=100)
+tree.column("Voltage", width=100)
+tree.column("Frequency", width=100)
+tree.column("Channel1(X)", width=100)
+tree.column("Channel2(Y)", width=100)
+
+
 # Scrollbar
 vsb = ttk.Scrollbar(data_frame, command = tree.yview)
 vsb.pack(side = 'right', fill = 'y')
 tree.configure(yscrollcommand=vsb.set)
 
-tree.pack(fill = 'both', expand = True)
+tree.pack()
 
 # Right frame
 right_frame = tk.Frame(output_frame, padx=10, pady=20)
@@ -263,7 +271,6 @@ autoscale_btn.pack()
 
 # Cursor snap to data point
 fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
-
 
 canvas._tkcanvas.pack(fill=tk.BOTH, expand=True)
 
