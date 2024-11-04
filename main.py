@@ -10,7 +10,6 @@ Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 import pyvisa
 import csv
 import time
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -37,7 +36,9 @@ data = {  # dictionary to store datapoints
     'Channel2(Y)': []
 }
 
+
 def run():
+    
     global running
     running = True
     
@@ -75,20 +76,24 @@ def run():
         # GUI update
         ax.autoscale(autoscale)
         if plot_type == "line_graph":
-            ax.plot(data['Time'], data['Channel1(X)'], color = "blue")
+            ax.plot(data[x_option.get()], data[y_option.get()], color = "blue")
         elif plot_type == "scatter_plot":
-            ax.scatter(data['Time'], data['Channel1(X)'], color = "blue")
+            ax.scatter(data[x_option.get()], data[y_option.get()], color = "blue")
         canvas.draw()
         
         root.after(0, update_output_text, timevalue, voltage, freq, channel1, channel2)
             
         time.sleep(2)
         timevalue += 2
+        
 
 def update_output_text(timevalue, voltage, freq, channel1, channel2):
+    
     tree.insert("", 0, values=(timevalue, voltage, freq, channel1, channel2))
 
+
 def change_plot():
+    
     global plot_type
     global autoscale
     xlim = ax.get_xlim()
@@ -104,21 +109,29 @@ def change_plot():
         plot_type = "line_graph"
         plot_btn.configure(text = "Scatter Plot")
 
+
 def start_run():
+    
     threading.Thread(target=run, daemon=True).start()
 
+
 def name_btn_clicked():
+    
     global csv_file_path
     current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
     csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{name_entry.get()}{current_time}.csv"
     filepath_text.configure(text=csv_file_path)
 
+
 def stop():
+    
     global running
     running = False
     
+    
 # Snap mouse to nearest data point in plot
 def on_mouse_move(event):
+    
     if event.inaxes is not None:
         mouse_x = event.xdata
         mouse_y = event.ydata
@@ -137,33 +150,34 @@ def on_mouse_move(event):
             ax.set_ylim(ylim)
         ax.autoscale(autoscale)
         if plot_type == "line_graph":
-            ax.plot(data['Time'], data['Channel1(X)'], color = "blue")
+            ax.plot(data[x_option.get()], data[y_option.get()], color = "blue")
         elif plot_type == "scatter_plot":
-            ax.scatter(data['Time'], data['Channel1(X)'], color = "blue")
+            ax.scatter(data[x_option.get()], data[y_option.get()], color = "blue")
         canvas.draw()
         
-        ax.plot(data['Time'][nearest_index], data['Channel1(X)'][nearest_index], 'ro')
-        ax.annotate(f'({data["Time"][nearest_index]}, {data["Channel1(X)"][nearest_index]})',
-                    (data['Time'][nearest_index], data['Channel1(X)'][nearest_index]),
+        ax.plot(data[x_option.get()][nearest_index], data[y_option.get()][nearest_index], 'ro')
+        ax.annotate(f'({data[x_option.get()][nearest_index]}, {data[y_option.get()][nearest_index]})',
+                    (data[x_option.get()][nearest_index], data[y_option.get()][nearest_index]),
                     textcoords="offset points", 
                     xytext=(0,10), 
                     ha='center', fontsize=8, color='red')
         
-        ax.set_xlabel('Time (seconds)')
-        ax.set_ylabel('Channel1(X)')
-        ax.set_title('Channel1(X) vs. Time')
+        ax.set_xlabel(x_option.get())
+        ax.set_ylabel(y_option.get())
+        ax.set_title(f'{y_option.get()} vs. {x_option.get()}')
         
         canvas.draw()
 
+
 def toggle_autoscale():
+    
     global autoscale
     if autoscale:
         autoscale = False
     else:
         autoscale = True
-
-
-# --------------------------- Driver code for GUI --------------------------- #
+        
+# --------------------------------- GUI Setup --------------------------------- #  
 root = tk.Tk()
 root.title("LAQM Lock-In Amplifier Data Visualizer")
 root.geometry('1600x900')
@@ -239,7 +253,23 @@ right_frame = tk.Frame(output_frame, padx=10, pady=20)
 right_frame.pack(side="right")
 
 # ----------------------- Plotting stuff ----------------------- #
-plot_title = tk.Label(right_frame, text="Live Data Plot")
+header_frame = tk.Frame(right_frame)
+header_frame.pack()
+
+# Axes Options
+x_option = tk.StringVar()
+x_option.set("Time")
+
+y_option = tk.StringVar()
+y_option.set("Channel1(X)")
+
+x_drop = tk.OptionMenu(header_frame, x_option, *fieldnames)
+y_drop = tk.OptionMenu(header_frame, y_option, *fieldnames)
+
+x_drop.pack(side = 'right')
+y_drop.pack(side = 'left')
+
+plot_title = tk.Label(header_frame, text="vs.")
 plot_title.config(font=(16))
 plot_title.pack()
 
