@@ -18,8 +18,6 @@ class Plotter:
     
     def update_plot(self, data, x_option, y_option):
         
-        self.ax.clear()
-        
         self.ax.autoscale(self.autoscale)
             
         if self.plot_type == "line_graph":

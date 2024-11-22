@@ -137,13 +137,14 @@ class GUI:
         self.autoscale_btn.pack()
         
         # Cursor snap to data point
-        self.fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
+        # self.fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
         
         self.canvas.draw()
         
         self.root.after(0, self.update_output_text)
     
     
+    #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
         
         self.xlim = self.plotter.ax.get_xlim()
@@ -163,6 +164,7 @@ class GUI:
             self.plot_btn.configure(text = "Scatter Plot")
     
     
+    # Executes when we click "Enter" under the "Enter your name" text box.
     def name_btn_clicked(self):
         current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
         self.data_handler.csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{self.name_entry.get()}{current_time}.csv"
@@ -190,7 +192,9 @@ class GUI:
 
             timevalue += 2
             time.sleep(2)
-
+            
+            
+    # Updates the output data display.
     def update_output_text(self):
         tree = self.tree
         for time, voltage, freq, ch1, ch2 in zip(self.data_handler.data['Time'], self.data_handler.data['Voltage'],
