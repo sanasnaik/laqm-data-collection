@@ -196,8 +196,7 @@ class GUI:
             
     # Updates the output data display.
     def update_output_text(self):
-        tree = self.tree
         for time, voltage, freq, ch1, ch2 in zip(self.data_handler.data['Time'], self.data_handler.data['Voltage'],
                                                  self.data_handler.data['Frequency'], self.data_handler.data['Channel1(X)'],
                                                  self.data_handler.data['Channel2(Y)']):
-            tree.insert("", "end", values=(time, voltage, freq, ch1, ch2))
+            self.tree.insert("", "end", values=(time, voltage, freq, ch1, ch2))
