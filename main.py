@@ -17,7 +17,7 @@ from plotter import Plotter
 #  Initialize
 instrument = Instrument()
 data_handler = DataHandler()
-plotter = Plotter(None, None)
+plotter = Plotter(None, None, None)
 root = tk.Tk()
 gui = GUI(root, instrument, data_handler, plotter)
 
