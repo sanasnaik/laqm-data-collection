@@ -120,7 +120,7 @@ class GUI:
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
         self.toolbar.update()
         
-        self.plotter = Plotter(self.canvas, self.ax)
+        self.plotter = Plotter(self.canvas, self.ax, self.data_handler)
 
         # Set up plot axes + title
         self.ax.plot(self.data_handler.data['Time'], self.data_handler.data['Channel1(X)'])
@@ -137,7 +137,7 @@ class GUI:
         self.autoscale_btn.pack()
         
         # Cursor snap to data point
-        # self.fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
+        self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
         self.canvas.draw()
         
@@ -186,8 +186,10 @@ class GUI:
             freq = self.instrument.get_frequency()
             channel1 = self.instrument.get_channel1()
             channel2 = self.instrument.get_channel2()
-
-            self.data_handler.append_data(timevalue, voltage, freq, channel1, channel2)
+            temp, t_status = self.instrument.client.get_temperature()
+            field, f_status = self.instrument.client.get_field()
+            
+            self.data_handler.append_data(timevalue, voltage, freq, channel1, channel2, temp, field)
             self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
             timevalue += 2
@@ -196,8 +198,7 @@ class GUI:
             
     # Updates the output data display.
     def update_output_text(self):
-        tree = self.tree
         for time, voltage, freq, ch1, ch2 in zip(self.data_handler.data['Time'], self.data_handler.data['Voltage'],
                                                  self.data_handler.data['Frequency'], self.data_handler.data['Channel1(X)'],
                                                  self.data_handler.data['Channel2(Y)']):
-            tree.insert("", "end", values=(time, voltage, freq, ch1, ch2))
+            self.tree.insert("", "end", values=(time, voltage, freq, ch1, ch2))

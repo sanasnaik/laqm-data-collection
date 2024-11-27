@@ -7,6 +7,9 @@ Past contributor: Keanu Shah
 Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 """
 import tkinter as tk
+import time
+import MultiPyVu as mpv
+import sys
 
 #  Separate clases to keep code modular!
 from instrument import Instrument
@@ -15,10 +18,15 @@ from gui import GUI
 from plotter import Plotter
 
 #  Initialize
-instrument = Instrument()
-data_handler = DataHandler()
-plotter = Plotter(None, None)
-root = tk.Tk()
-gui = GUI(root, instrument, data_handler, plotter)
+#  Start the server.
+with mpv.Server():
+    #  Start the client
+    with mpv.Client() as client:
 
-root.mainloop()
+        instrument = Instrument(client)
+        data_handler = DataHandler()
+        plotter = Plotter(None, None, None)
+        root = tk.Tk()
+        gui = GUI(root, instrument, data_handler, plotter)
+
+        root.mainloop()

@@ -18,13 +18,15 @@ class DataHandler:
         else:
             self.csv_file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{self.current_time}.csv"
             
-        self.fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
+        self.fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)', 'Temperature', 'Field']
         self.data = {  
             'Time': [], 
             'Voltage': [], 
             'Frequency': [], 
             'Channel1(X)': [], 
-            'Channel2(Y)': [] 
+            'Channel2(Y)': [],
+            'Temperature': [],
+            'Field': []
         }
         
         
@@ -42,14 +44,17 @@ class DataHandler:
             csv_writer.writeheader()
 
 
-    def append_data(self, time, voltage, freq, channel1, channel2):
+    def append_data(self, time, voltage, freq, channel1, channel2, temp, field):
         
         info = {
             "Time": time,
             "Voltage": voltage,
             "Frequency": freq,
             "Channel1(X)": float(channel1),
-            "Channel2(Y)": float(channel2)
+            "Channel2(Y)": float(channel2),
+            'Temperature': temp,
+            'Field': field
+
         }
         
         self.data['Time'].append(time)
@@ -57,4 +62,6 @@ class DataHandler:
         self.data['Frequency'].append(freq)
         self.data['Channel1(X)'].append(float(channel1))
         self.data['Channel2(Y)'].append(float(channel2))
+        self.data['Temperature'].append(temp)
+        self.data['Field'].append(field)
         self.write_to_csv(info)

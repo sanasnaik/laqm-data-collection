@@ -5,10 +5,12 @@ Created on Mon Nov 18 14:42:07 2024
 """
 
 import pyvisa
+import MultiPyVu as mpv
 
 class Instrument:
-    def __init__(self):
+    def __init__(self, client):
         self.rm = pyvisa.ResourceManager()
+        self.client = client
         self.instrument = self.rm.open_resource('GPIB0::8::INSTR')
     
     def get_voltage(self):
