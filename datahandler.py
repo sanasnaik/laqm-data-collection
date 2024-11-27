@@ -16,7 +16,7 @@ class DataHandler:
         if file_path:
             self.csv_file_path = file_path
         else:
-            self.csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{self.current_time}.csv"
+            self.csv_file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{self.current_time}.csv"
             
         self.fieldnames = ['Time', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)']
         self.data = {  

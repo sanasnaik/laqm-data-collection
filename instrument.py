@@ -7,9 +7,9 @@ Created on Mon Nov 18 14:42:07 2024
 import pyvisa
 
 class Instrument:
-    def __init__(self, resource_address='GPIB0::8::INSTR'):
+    def __init__(self):
         self.rm = pyvisa.ResourceManager()
-        self.instrument = self.rm.open_resource(resource_address)
+        self.instrument = self.rm.open_resource('GPIB0::8::INSTR')
     
     def get_voltage(self):
         return self.instrument.query_ascii_values('SLVL?')[0]
