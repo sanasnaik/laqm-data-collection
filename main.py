@@ -22,4 +22,3 @@ root = tk.Tk()
 gui = GUI(root, instrument, data_handler, plotter)
 
 root.mainloop()
-

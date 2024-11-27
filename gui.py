@@ -167,7 +167,7 @@ class GUI:
     # Executes when we click "Enter" under the "Enter your name" text box.
     def name_btn_clicked(self):
         current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
-        self.data_handler.csv_file_path = f"C:\\Users\\laqm\\Documents\\CSV Data Outputs\\{self.name_entry.get()}{current_time}.csv"
+        self.data_handler.csv_file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{self.name_entry.get()}{current_time}.csv"
         self.filepath_text.configure(text=self.data_handler.csv_file_path)
 
     def start_run(self):
