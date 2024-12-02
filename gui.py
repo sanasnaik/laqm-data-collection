@@ -75,18 +75,25 @@ class GUI:
         self.output_title.pack()
         
         # Table of data
-        self.tree = ttk.Treeview(self.left_frame, columns=("Time", "Voltage", "Frequency", "Channel1(X)", "Channel2(Y)"), show="headings")
+        self.tree = ttk.Treeview(self.left_frame, columns=("Time", "Harmonic", "Voltage", "Frequency", "Channel1(X)", "Channel2(Y)", "Temp", "Field"), show="headings")
         self.tree.heading("Time", text="Time (Seconds)")
+        self.tree.heading("Harmonic", text="Harmonic Number")
         self.tree.heading("Voltage", text="Voltage")
         self.tree.heading("Frequency", text="Frequency")
         self.tree.heading("Channel1(X)", text="Channel1(X)")
         self.tree.heading("Channel2(Y)", text="Channel2(Y)")
+        self.tree.heading("Temp", text="Temperature (K)")
+        self.tree.heading("Field", text="Magnetic Field")
         
         self.tree.column("Time", width=100)
+        self.tree.column("Harmonic", width=100)
+        self.tree.column("Channel2(Y)", width=100)
         self.tree.column("Voltage", width=100)
         self.tree.column("Frequency", width=100)
         self.tree.column("Channel1(X)", width=100)
         self.tree.column("Channel2(Y)", width=100)
+        self.tree.column("Temp", width=100)
+        self.tree.column("Field", width=100)
         
         # Scrollbar
         self.vsb = ttk.Scrollbar(self.left_frame, command=self.tree.yview)
@@ -182,14 +189,15 @@ class GUI:
         timevalue = 0
 
         while self.running:
+            harm = self.instrument.get_harmonic()
             voltage = self.instrument.get_voltage()
             freq = self.instrument.get_frequency()
             channel1 = self.instrument.get_channel1()
             channel2 = self.instrument.get_channel2()
-            temp, t_status = self.instrument.client.get_temperature()
-            field, f_status = self.instrument.client.get_field()
+            temp, _ = self.instrument.client.get_temperature()
+            field, _ = self.instrument.client.get_field()
             
-            self.data_handler.append_data(timevalue, voltage, freq, channel1, channel2, temp, field)
+            self.data_handler.append_data(timevalue, harm, voltage, freq, channel1, channel2, temp, field)
             self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
             timevalue += 2

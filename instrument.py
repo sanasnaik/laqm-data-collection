@@ -13,9 +13,11 @@ class Instrument:
         self.client = client
         self.instrument = self.rm.open_resource('GPIB0::8::INSTR')
     
+    #  Gets the amplitude of the sine output in volts
     def get_voltage(self):
         return self.instrument.query_ascii_values('SLVL?')[0]
     
+    #  Gets the frequency 
     def get_frequency(self):
         return self.instrument.query_ascii_values('FREQ?')[0]
     
@@ -24,3 +26,6 @@ class Instrument:
     
     def get_channel2(self):
         return self.instrument.query_ascii_values("OUTP? 2")[0]
+    
+    def get_harmonic(self):
+        return self.instrument.query_ascii_values("HARM?")[0]
