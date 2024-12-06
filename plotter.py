@@ -44,7 +44,7 @@ class Plotter:
     #  note* randomly breaking, need to fix.
     #  highlights and annotates the nearest data point
     def on_mouse_move(self, event):
-        if event.inaxes is not None:
+        if event.inaxes is not None and self.data_handler.data['Time']:
             mouse_x = event.xdata
             mouse_y = event.ydata
 

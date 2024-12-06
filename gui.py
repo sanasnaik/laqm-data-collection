@@ -146,10 +146,7 @@ class GUI:
         # Cursor snap to data point
         self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
-        self.canvas.draw()
-        
-        self.root.after(0, self.update_output_text)
-    
+        self.canvas.draw()    
     
     #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
@@ -200,13 +197,8 @@ class GUI:
             
             self.data_handler.append_data(timevalue, harm, voltage, freq, channel1, channel2, temp, field)
             self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
+            self.tree.insert("", "end", values = (timevalue, harm, voltage, freq, channel1, channel2, temp, field))
 
             timevalue += 0.3
+            timevalue = round(timevalue, 1)
             time.sleep(0.3)
-            
-    # Updates the output data display.
-    def update_output_text(self):
-        for time, voltage, freq, ch1, ch2 in zip(self.data_handler.data['Time'], self.data_handler.data['Voltage'],
-                                                 self.data_handler.data['Frequency'], self.data_handler.data['Channel1(X)'],
-                                                 self.data_handler.data['Channel2(Y)']):
-            self.tree.insert("", "end", values=(time, voltage, freq, ch1, ch2))
