@@ -183,7 +183,6 @@ class GUI:
     def run(self):
         self.running = True
         self.data_handler.write_header()
-        self.instrument.autosens()
         timevalue = 0
 
         while self.running:
@@ -198,6 +197,7 @@ class GUI:
             self.data_handler.append_data(timevalue, harm, voltage, freq, channel1, channel2, temp, field)
             self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
             self.tree.insert("", "end", values = (timevalue, harm, voltage, freq, channel1, channel2, temp, field))
+            self.instrument.autosens()
 
             timevalue += 0.3
             timevalue = round(timevalue, 1)
