@@ -35,5 +35,4 @@ class Instrument:
     #  Auto adjusts sensitivity (fix this)
     def autosens(self):
         if self.pymeasure_instrument.is_out_of_range():
-            print("oor")
             self.pymeasure_instrument.quick_range()

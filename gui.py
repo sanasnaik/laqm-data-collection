@@ -12,21 +12,28 @@ from datahandler import DataHandler
 from plotter import Plotter
 import threading
 import time
+import sys
 import matplotlib.pyplot as plt
 import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import pyvisa
+import MultiPyVu as mpv
+from pymeasure.instruments.srs import SR830
 
 class GUI:
-    def __init__(self, root, instrument, data_handler, plotter):
+    def __init__(self, root, instrument, data_handler, plotter, client):
+        self.client = client
         self.root = root
         self.instrument = instrument
         self.data_handler = data_handler
+        self.data_handler.write_header()
         self.plotter = plotter
+        self.data_collect_id = ''
         
-        self.running = False
+        self.collecting = False
         self.time_value = 0
-        self.x_option = tk.StringVar(value="Time")
-        self.y_option = tk.StringVar(value="Channel1(X)")
+        self.x_option = tk.StringVar(value = "Time")
+        self.y_option = tk.StringVar(value = "Channel1(X)")
 
         self.setup_gui()
     
@@ -37,8 +44,8 @@ class GUI:
         # Name frame
         self.name_frame = tk.Frame(self.root, padx=20, pady=20)
         self.name_frame.pack(pady=50)
-        
-        self.name_text = tk.Label(self.name_frame, text="Enter your name (this will go in the CSV file name)", font=16)
+
+        self.name_text = tk.Label(self.name_frame, text="Enter your name (this will go in the CSV file name)\n NOTE: Give file a unique name", font=16)
         self.name_text.pack()
         
         self.name_entry = tk.Entry(self.name_frame, width=10)
@@ -50,6 +57,13 @@ class GUI:
         self.filepath_text = tk.Label(self.name_frame, text=self.data_handler.csv_file_path)
         self.filepath_text.pack()
 
+        self.close_text = tk.Label(self.name_frame, text="Do not click X. Click 'Close' to close window.", font = 10)
+        self.close_text.pack()
+
+        # Close button -- test
+        self.close_btn = tk.Button(self.name_frame, text="Close", command=self.close, font=10)
+        self.close_btn.pack()
+        
         # Start frame
         self.start_frame = tk.Frame(self.root, padx=20, pady=20)
         self.start_frame.pack()
@@ -142,12 +156,20 @@ class GUI:
         # Autoscaling
         self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
         self.autoscale_btn.pack()
-        
-        # Cursor snap to data point
-        self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
+
+        # Cursor snap to data point - disabled for now
+        # self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
         self.canvas.draw()    
     
+    # test
+    def close(self):
+        if self.data_collect_id:
+            self.root.after_cancel(self.data_collect_id)
+        self.root.destroy()
+        self.client.close_server()
+        sys.exit()
+
     #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
         
@@ -176,16 +198,22 @@ class GUI:
 
     def start_run(self):
         threading.Thread(target=self.run, daemon=True).start()
+        self.start_btn.config(command = self.run)
+        self.data_collect()  # begin the process
 
     def stop(self):
-        self.running = False
+        self.collecting = False
 
     def run(self):
-        self.running = True
-        self.data_handler.write_header()
-        timevalue = 0
+        self.collecting = True
 
-        while self.running:
+    def update_gui(self, harm, voltage, freq, channel1, channel2, temp, field):
+        self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
+        self.tree.insert("", "end", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
+        self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
+
+    def data_collect(self):
+        if self.collecting:
             harm = self.instrument.get_harmonic()
             voltage = self.instrument.get_voltage()
             freq = self.instrument.get_frequency()
@@ -194,11 +222,9 @@ class GUI:
             temp, _ = self.instrument.client.get_temperature()
             field, _ = self.instrument.client.get_field()
             
-            self.data_handler.append_data(timevalue, harm, voltage, freq, channel1, channel2, temp, field)
-            self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
-            self.tree.insert("", "end", values = (timevalue, harm, voltage, freq, channel1, channel2, temp, field))
+            self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
             self.instrument.autosens()
 
-            timevalue += 0.3
-            timevalue = round(timevalue, 1)
-            time.sleep(0.3)
+        self.time_value += 0.3
+        self.time_value = round(self.time_value, 1)
+        self.data_collect_id = self.root.after(300, self.data_collect)

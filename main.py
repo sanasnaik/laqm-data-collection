@@ -27,6 +27,7 @@ with mpv.Server():
         data_handler = DataHandler()
         plotter = Plotter(None, None, None)
         root = tk.Tk()
-        gui = GUI(root, instrument, data_handler, plotter)
+        gui = GUI(root, instrument, data_handler, plotter, client)
 
         root.mainloop()
+        sys.exit()
