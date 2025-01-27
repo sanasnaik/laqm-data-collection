@@ -58,7 +58,7 @@ class DataHandler:
             'Field': field
 
         }
-        
+
         self.data['Time'].append(time)
         self.data['Harmonic'].append(harmonic)
         self.data['Voltage'].append(voltage)

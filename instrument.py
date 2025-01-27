@@ -31,6 +31,9 @@ class Instrument:
     
     def get_harmonic(self):
         return self.instrument.query_ascii_values("HARM?")[0]
+    
+    def set_harmonic(self, harmonic_num):
+        self.instrument.write(f"HARM", {harmonic_num})
 
     #  Auto adjusts sensitivity (fix this)
     def autosens(self):
