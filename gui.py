@@ -117,50 +117,50 @@ class GUI:
         self.tree.pack()
 
         # ----------------------- Plotting stuff ----------------------- #
-        self.right_frame = tk.Frame(self.output_frame, padx=10, pady=20)
-        self.right_frame.pack(side="right")
+        # self.right_frame = tk.Frame(self.output_frame, padx=10, pady=20)
+        # self.right_frame.pack(side="right")
 
-        # Dropdowns for selecting x and y axis fields
-        self.header_frame = tk.Frame(self.right_frame)
-        self.header_frame.pack()
+        # # Dropdowns for selecting x and y axis fields
+        # self.header_frame = tk.Frame(self.right_frame)
+        # self.header_frame.pack()
         
-        self.x_drop = tk.OptionMenu(self.header_frame, self.x_option, *self.data_handler.fieldnames)
-        self.y_drop = tk.OptionMenu(self.header_frame, self.y_option, *self.data_handler.fieldnames)
+        # self.x_drop = tk.OptionMenu(self.header_frame, self.x_option, *self.data_handler.fieldnames)
+        # self.y_drop = tk.OptionMenu(self.header_frame, self.y_option, *self.data_handler.fieldnames)
         
-        self.x_drop.pack(side='right')
-        self.y_drop.pack(side='left')
+        # self.x_drop.pack(side='right')
+        # self.y_drop.pack(side='left')
 
-        # Plotting area
-        self.fig, self.ax = plt.subplots()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.right_frame)
-        self.canvas.get_tk_widget().pack()
+        # # Plotting area
+        # self.fig, self.ax = plt.subplots()
+        # self.canvas = FigureCanvasTkAgg(self.fig, master=self.right_frame)
+        # self.canvas.get_tk_widget().pack()
         
-        # Navigation toolbar
-        self.toolbar_frame = tk.Frame(self.right_frame)
-        self.toolbar_frame.pack(fill=tk.X)
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
-        self.toolbar.update()
+        # # Navigation toolbar
+        # self.toolbar_frame = tk.Frame(self.right_frame)
+        # self.toolbar_frame.pack(fill=tk.X)
+        # self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
+        # self.toolbar.update()
         
-        self.plotter = Plotter(self.canvas, self.ax, self.data_handler)
+        # self.plotter = Plotter(self.canvas, self.ax, self.data_handler)
 
-        # Set up plot axes + title
-        self.ax.plot(self.data_handler.data['Time'], self.data_handler.data['Channel1(X)'])
-        self.ax.set_xlabel('Time (seconds)')
-        self.ax.set_ylabel('Channel1(X)')
-        self.ax.set_title('Channel1(X) vs. Time')
+        # # Set up plot axes + title
+        # self.ax.plot(self.data_handler.data['Time'], self.data_handler.data['Channel1(X)'])
+        # self.ax.set_xlabel('Time (seconds)')
+        # self.ax.set_ylabel('Channel1(X)')
+        # self.ax.set_title('Channel1(X) vs. Time')
         
-        # Scatter plot and line graph options
-        self.plot_btn = tk.Button(self.toolbar_frame, text = "Scatter Plot", command = self.change_plot)
-        self.plot_btn.pack()
+        # # Scatter plot and line graph options
+        # self.plot_btn = tk.Button(self.toolbar_frame, text = "Scatter Plot", command = self.change_plot)
+        # self.plot_btn.pack()
         
-        # Autoscaling
-        self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
-        self.autoscale_btn.pack()
+        # # Autoscaling
+        # self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
+        # self.autoscale_btn.pack()
 
         # Cursor snap to data point - disabled for now
         # self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
-        self.canvas.draw()    
+        # self.canvas.draw()    
     
     # test
     def close(self):
@@ -209,8 +209,8 @@ class GUI:
 
     def update_gui(self, harm, voltage, freq, channel1, channel2, temp, field):
         self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
-        self.tree.insert("", "end", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
-        self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
+        self.tree.insert("", "0", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
+        # self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
     def data_collect(self):
         if self.collecting:
