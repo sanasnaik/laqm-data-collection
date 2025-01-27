@@ -214,17 +214,20 @@ class GUI:
 
     def data_collect(self):
         if self.collecting:
-            harm = self.instrument.get_harmonic()
-            voltage = self.instrument.get_voltage()
-            freq = self.instrument.get_frequency()
-            channel1 = self.instrument.get_channel1()
-            channel2 = self.instrument.get_channel2()
-            temp, _ = self.instrument.client.get_temperature()
-            field, _ = self.instrument.client.get_field()
-            
-            self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
-            self.instrument.autosens()
+            try:  # hopefully this stops the socket connection error
+                harm = self.instrument.get_harmonic()
+                voltage = self.instrument.get_voltage()
+                freq = self.instrument.get_frequency()
+                channel1 = self.instrument.get_channel1()
+                channel2 = self.instrument.get_channel2()
+                temp, _ = self.instrument.client.get_temperature()
+                field, _ = self.instrument.client.get_field()
+                self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
+                self.instrument.autosens()
 
+            except Exception as e:
+                print(e)
+            
         self.time_value += 0.3
         self.time_value = round(self.time_value, 1)
         self.data_collect_id = self.root.after(300, self.data_collect)
