@@ -24,9 +24,9 @@ class GUI:
     def __init__(self, root, instrument, data_handler, plotter, client):
         self.client = client
         self.root = root
-        self.instrument = instrument
         self.data_handler = data_handler
-        self.data_handler.write_header()
+        self.instrument = instrument
+        #self.data_handler.write_header()
         self.plotter = plotter
         self.data_collect_id = ''
         
@@ -77,6 +77,15 @@ class GUI:
         self.stop_btn = tk.Button(self.start_frame, text="Stop", command=self.stop, font=10)
         self.stop_btn.pack(side="right", padx=5)
 
+        self.harmonic_text = tk.Label(self.start_frame, text="Set Harmonic Number. Current: 1", font=20, justify="center")
+        self.harmonic_text.pack()
+
+        self.harmonic_entry = tk.Entry(self.start_frame, width=10)
+        self.harmonic_entry.pack()
+
+        self.harmonic_btn = tk.Button(self.start_frame, text="Enter", command=self.change_harmonic)
+        self.harmonic_btn.pack(pady=5)
+
         # ----------------------- Output Frame ----------------------- #
         self.output_frame = tk.Frame(self.root, padx=10, pady=20)
         self.output_frame.pack()
@@ -117,50 +126,50 @@ class GUI:
         self.tree.pack()
 
         # ----------------------- Plotting stuff ----------------------- #
-        self.right_frame = tk.Frame(self.output_frame, padx=10, pady=20)
-        self.right_frame.pack(side="right")
+        # self.right_frame = tk.Frame(self.output_frame, padx=10, pady=20)
+        # self.right_frame.pack(side="right")
 
-        # Dropdowns for selecting x and y axis fields
-        self.header_frame = tk.Frame(self.right_frame)
-        self.header_frame.pack()
+        # # Dropdowns for selecting x and y axis fields
+        # self.header_frame = tk.Frame(self.right_frame)
+        # self.header_frame.pack()
         
-        self.x_drop = tk.OptionMenu(self.header_frame, self.x_option, *self.data_handler.fieldnames)
-        self.y_drop = tk.OptionMenu(self.header_frame, self.y_option, *self.data_handler.fieldnames)
+        # self.x_drop = tk.OptionMenu(self.header_frame, self.x_option, *self.data_handler.fieldnames)
+        # self.y_drop = tk.OptionMenu(self.header_frame, self.y_option, *self.data_handler.fieldnames)
         
-        self.x_drop.pack(side='right')
-        self.y_drop.pack(side='left')
+        # self.x_drop.pack(side='right')
+        # self.y_drop.pack(side='left')
 
-        # Plotting area
-        self.fig, self.ax = plt.subplots()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.right_frame)
-        self.canvas.get_tk_widget().pack()
+        # # Plotting area
+        # self.fig, self.ax = plt.subplots()
+        # self.canvas = FigureCanvasTkAgg(self.fig, master=self.right_frame)
+        # self.canvas.get_tk_widget().pack()
         
-        # Navigation toolbar
-        self.toolbar_frame = tk.Frame(self.right_frame)
-        self.toolbar_frame.pack(fill=tk.X)
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
-        self.toolbar.update()
+        # # Navigation toolbar
+        # self.toolbar_frame = tk.Frame(self.right_frame)
+        # self.toolbar_frame.pack(fill=tk.X)
+        # self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
+        # self.toolbar.update()
         
-        self.plotter = Plotter(self.canvas, self.ax, self.data_handler)
+        # self.plotter = Plotter(self.canvas, self.ax, self.data_handler)
 
-        # Set up plot axes + title
-        self.ax.plot(self.data_handler.data['Time'], self.data_handler.data['Channel1(X)'])
-        self.ax.set_xlabel('Time (seconds)')
-        self.ax.set_ylabel('Channel1(X)')
-        self.ax.set_title('Channel1(X) vs. Time')
+        # # Set up plot axes + title
+        # self.ax.plot(self.data_handler.data['Time'], self.data_handler.data['Channel1(X)'])
+        # self.ax.set_xlabel('Time (seconds)')
+        # self.ax.set_ylabel('Channel1(X)')
+        # self.ax.set_title('Channel1(X) vs. Time')
         
-        # Scatter plot and line graph options
-        self.plot_btn = tk.Button(self.toolbar_frame, text = "Scatter Plot", command = self.change_plot)
-        self.plot_btn.pack()
+        # # Scatter plot and line graph options
+        # self.plot_btn = tk.Button(self.toolbar_frame, text = "Scatter Plot", command = self.change_plot)
+        # self.plot_btn.pack()
         
-        # Autoscaling
-        self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
-        self.autoscale_btn.pack()
+        # # Autoscaling
+        # self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
+        # self.autoscale_btn.pack()
 
         # Cursor snap to data point - disabled for now
         # self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
-        self.canvas.draw()    
+        # self.canvas.draw()    
     
     # test
     def close(self):
@@ -169,6 +178,13 @@ class GUI:
         self.root.destroy()
         self.client.close_server()
         sys.exit()
+    
+    def change_harmonic(self):
+        try:
+            self.instrument.set_harmonic(int(self.harmonic_entry.get()))
+            self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {self.harmonic_entry.get()}")
+        except:
+            self.harmonic_text.configure(text="Error: enter 1, 2, or 3")
 
     #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
@@ -209,22 +225,26 @@ class GUI:
 
     def update_gui(self, harm, voltage, freq, channel1, channel2, temp, field):
         self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
-        self.tree.insert("", "end", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
-        self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
+        self.tree.insert("", "0", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
+        self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {harm}")
+        # self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
     def data_collect(self):
         if self.collecting:
-            harm = self.instrument.get_harmonic()
-            voltage = self.instrument.get_voltage()
-            freq = self.instrument.get_frequency()
-            channel1 = self.instrument.get_channel1()
-            channel2 = self.instrument.get_channel2()
-            temp, _ = self.instrument.client.get_temperature()
-            field, _ = self.instrument.client.get_field()
-            
-            self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
-            self.instrument.autosens()
+            try:  # hopefully this stops the socket connection error
+                harm = self.instrument.get_harmonic()
+                voltage = self.instrument.get_voltage()
+                freq = self.instrument.get_frequency()
+                channel1 = self.instrument.get_channel1()
+                channel2 = self.instrument.get_channel2()
+                temp, _ = self.instrument.client.get_temperature()
+                field, _ = self.instrument.client.get_field()
+                self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
+                self.instrument.autosens()
 
+            except Exception as e:
+                print(e)
+            
         self.time_value += 0.3
         self.time_value = round(self.time_value, 1)
         self.data_collect_id = self.root.after(300, self.data_collect)
