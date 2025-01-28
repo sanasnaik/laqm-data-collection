@@ -226,6 +226,7 @@ class GUI:
     def update_gui(self, harm, voltage, freq, channel1, channel2, temp, field):
         self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
         self.tree.insert("", "0", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
+        self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {harm}")
         # self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
     def data_collect(self):

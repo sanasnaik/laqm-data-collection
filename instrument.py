@@ -49,7 +49,7 @@ class Instrument:
             while self.get_voltage() == 0 or self.get_channel1() == 0 or self.get_channel2() == 0:
                 self.pymeasure_instrument.write('LIAE 2,1')
                 self.pymeasure_instrument.write("SENS%d" % (int(self.pymeasure_instrument.ask("SENS?")) - 1))
-                time.sleep(5.0 * self.pymeasure_instrument.time_constant)
+                # time.sleep(5.0 * self.pymeasure_instrument.time_constant)
                 self.pymeasure_instrument.write("*CLS")
                 # Set the range as low as possible
                 newsensitivity = 1.15 * abs(self.pymeasure_instrument.magnitude)
