@@ -24,9 +24,9 @@ class GUI:
     def __init__(self, root, instrument, data_handler, plotter, client):
         self.client = client
         self.root = root
-        self.instrument = instrument
         self.data_handler = data_handler
-        self.data_handler.write_header()
+        self.instrument = instrument
+        #self.data_handler.write_header()
         self.plotter = plotter
         self.data_collect_id = ''
         
@@ -84,7 +84,7 @@ class GUI:
         self.harmonic_entry.pack()
 
         self.harmonic_btn = tk.Button(self.start_frame, text="Enter", command=self.change_harmonic)
-        self.name_btn.pack(pady=5)
+        self.harmonic_btn.pack(pady=5)
 
         # ----------------------- Output Frame ----------------------- #
         self.output_frame = tk.Frame(self.root, padx=10, pady=20)
@@ -181,11 +181,10 @@ class GUI:
     
     def change_harmonic(self):
         try:
-            self.set_harmonic(self.harmonic_entry.get)
-            self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {self.harmonic_entry.get}")
+            self.instrument.set_harmonic(int(self.harmonic_entry.get()))
+            self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {self.harmonic_entry.get()}")
         except:
             self.harmonic_text.configure(text="Error: enter 1, 2, or 3")
-
 
     #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
