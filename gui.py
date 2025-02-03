@@ -240,7 +240,7 @@ class GUI:
                 temp, _ = self.instrument.client.get_temperature()
                 field, _ = self.instrument.client.get_field()
                 self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
-                self.instrument.autosens()
+                self.instrument.autosens_thread()
 
             except Exception as e:
                 print(e)
