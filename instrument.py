@@ -40,6 +40,11 @@ class Instrument:
     def set_harmonic(self, harmonic_num):
         self.pymeasure_instrument.harmonic = harmonic_num
 
+    def autosens_thread(self):
+        thread = threading.Thread(target=self.autosens)
+        thread.daemon = True
+        thread.start()
+
     #  Auto adjusts sensitivity (fix this)
     def autosens(self):
         if self.pymeasure_instrument.is_out_of_range():
