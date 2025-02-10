@@ -26,7 +26,7 @@ class GUI:
         self.root = root
         self.data_handler = data_handler
         self.instrument = instrument
-        #self.data_handler.write_header()
+        self.data_handler.write_header()
         self.plotter = plotter
         self.data_collect_id = ''
         
@@ -171,7 +171,6 @@ class GUI:
         
         # self.canvas.draw()    
     
-    # test
     def close(self):
         if self.data_collect_id:
             self.root.after_cancel(self.data_collect_id)
@@ -205,7 +204,6 @@ class GUI:
             self.plotter.plot_type = "line_graph"
             self.plot_btn.configure(text = "Scatter Plot")
     
-    
     # Executes when we click "Enter" under the "Enter your name" text box.
     def name_btn_clicked(self):
         current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
@@ -213,9 +211,9 @@ class GUI:
         self.filepath_text.configure(text=self.data_handler.csv_file_path)
 
     def start_run(self):
+        self.data_collect()
         threading.Thread(target=self.run, daemon=True).start()
         self.start_btn.config(command = self.run)
-        self.data_collect()  # begin the process
 
     def stop(self):
         self.collecting = False

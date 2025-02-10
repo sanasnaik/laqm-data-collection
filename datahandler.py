@@ -41,11 +41,8 @@ class DataHandler:
     def write_header(self):
         
         with open(self.csv_file_path, mode='a', newline='') as csv_file: # Commented out original csv_writer lines, throwing error b/c dictionary misuse
-            csv_writer = csv.DictWriter(csv_file, fieldnames=self.fieldnames)
-            csv_writer.writerow(['Time', 'Harmonic', 'Voltage', 'Frequency', 'Channel1(X)', 'Channel2(Y)', 'Temperature', 'Field'])
-            # csv_writer = csv.writer(csv_file, delimiter=',')
-            # csv_writer.writerow(self.fieldnames)
-
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(self.fieldnames)
 
     def append_data(self, time, harmonic, voltage, freq, channel1, channel2, temp, field):
         
