@@ -11,14 +11,11 @@ from instrument import Instrument
 from datahandler import DataHandler
 from plotter import Plotter
 import threading
-import time
+import queue
 import sys
 import matplotlib.pyplot as plt
 import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import pyvisa
-import MultiPyVu as mpv
-from pymeasure.instruments.srs import SR830
 
 class GUI:
     def __init__(self, root, instrument, data_handler, plotter, client):
@@ -182,6 +179,7 @@ class GUI:
         try:
             self.instrument.set_harmonic(int(self.harmonic_entry.get()))
             self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {self.harmonic_entry.get()}")
+            
         except:
             self.harmonic_text.configure(text="Error: enter 1, 2, or 3")
 
@@ -211,8 +209,8 @@ class GUI:
         self.filepath_text.configure(text=self.data_handler.csv_file_path)
 
     def start_run(self):
+        self.run()
         self.data_collect()
-        threading.Thread(target=self.run, daemon=True).start()
         self.start_btn.config(command = self.run)
 
     def stop(self):
@@ -222,26 +220,29 @@ class GUI:
         self.collecting = True
 
     def update_gui(self, harm, voltage, freq, channel1, channel2, temp, field):
-        self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
-        self.tree.insert("", "0", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
         self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {harm}")
+        self.tree.insert("", "0", values = (self.time_value, harm, voltage, freq, channel1, channel2, temp, field))
         # self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 
     def data_collect(self):
         if self.collecting:
-            try:  # hopefully this stops the socket connection error
-                harm = self.instrument.get_harmonic()
-                voltage = self.instrument.get_voltage()
-                freq = self.instrument.get_frequency()
-                channel1 = self.instrument.get_channel1()
-                channel2 = self.instrument.get_channel2()
-                temp, _ = self.instrument.client.get_temperature()
-                field, _ = self.instrument.client.get_field()
-                self.root.after(0, self.update_gui(harm, voltage, freq, channel1, channel2, temp, field))
-                self.instrument.autosens_thread()
+            harm = self.instrument.get_harmonic()
+            voltage = self.instrument.get_voltage()
+            freq = self.instrument.get_frequency()
+            channel1 = self.instrument.get_channel1()
+            channel2 = self.instrument.get_channel2()
+            temp, _ = self.instrument.client.get_temperature()
+            field, _ = self.instrument.client.get_field()
+            self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
 
-            except Exception as e:
-                print(e)
+            # Second priorities -- autosensitivity thread and update GUI thread
+            self.root.after(0, self.update_gui, harm, voltage, freq, channel1, channel2, temp, field)
+
+            with self.instrument.autosens_lock:
+                if not self.instrument.autosens_thread_running:
+                    # Start a new autosens thread if the previous one has finished
+                    autosens_thread = threading.Thread(target = self.instrument.autosens, daemon = True)
+                    autosens_thread.start()
             
         self.time_value += 0.3
         self.time_value = round(self.time_value, 1)
