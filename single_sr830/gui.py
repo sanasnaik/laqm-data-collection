@@ -35,7 +35,7 @@ class GUI:
         self.setup_gui()
     
     def setup_gui(self):
-        self.root.title("LAQM Lock-In Amplifier Data Visualizer")
+        self.root.title("LAQM SINGLE Lock-In Amplifier Data Visualizer")
         self.root.geometry('1600x900')
 
         # Name frame
@@ -91,7 +91,7 @@ class GUI:
         self.left_frame = tk.Frame(self.output_frame, padx=10, pady=20)
         self.left_frame.pack(side="left", padx=0)
         
-        self.output_title = tk.Label(self.left_frame, text="Output Data", font=16)
+        self.output_title = tk.Label(self.left_frame, text="Output Data (GPIB Address 8)", font=16)
         self.output_title.pack()
         
         # Table of data
@@ -107,7 +107,6 @@ class GUI:
         
         self.tree.column("Time", width=100)
         self.tree.column("Harmonic", width=100)
-        self.tree.column("Channel2(Y)", width=100)
         self.tree.column("Voltage", width=100)
         self.tree.column("Frequency", width=100)
         self.tree.column("Channel1(X)", width=100)

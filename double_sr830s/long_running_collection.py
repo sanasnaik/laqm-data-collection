@@ -18,11 +18,11 @@ current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
 
 # ------------------------ SET UP HERE ------------------------ #
 # Set file path name:
-name = 'long running test ' # default: nothing
+name = 'tcwu-EIODevice-Ch1RT2' # default: nothing
 file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{name}{current_time}.csv"
 
 # Set harmonic number:
-harm_num = 3  # default: 1
+harm_num = 2  # default: 1
 # ------------------------ SET UP END ------------------------ #
 
 #  Initialize
@@ -50,7 +50,7 @@ with mpv.Server():
             channel2 = instrument.get_channel2()
             temp, _ = instrument.client.get_temperature()
             field, _ = instrument.client.get_field()
-            instrument.autosens_thread()
+            #instrument.autosens_thread()
 
             data_handler.append_data(time_value, harm, voltage, freq, channel1, channel2, temp, field)
 
