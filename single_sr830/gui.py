@@ -228,11 +228,11 @@ class GUI:
 
     def data_collect(self):
         if self.collecting:
-            harm = self.instrument.get_harmonic()
-            voltage = self.instrument.get_voltage()
-            freq = self.instrument.get_frequency()
-            channel1 = self.instrument.get_channel1()
-            channel2 = self.instrument.get_channel2()
+            harm = self.instrument.get_channel1()
+            voltage = self.instrument.get_channel2()
+            freq = self.instrument.get_harmonic()
+            channel1 = self.instrument.get_voltage()
+            channel2 = self.instrument.get_frequency()
             temp, _ = self.instrument.client.get_temperature()
             field, _ = self.instrument.client.get_field()
             self.data_handler.append_data(self.time_value, harm, voltage, freq, channel1, channel2, temp, field)
