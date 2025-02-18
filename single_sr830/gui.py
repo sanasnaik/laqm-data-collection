@@ -74,13 +74,17 @@ class GUI:
         self.stop_btn = tk.Button(self.start_frame, text="Stop", command=self.stop, font=10)
         self.stop_btn.pack(side="right", padx=5)
 
-        self.harmonic_text = tk.Label(self.start_frame, text="Set Harmonic Number. Current: 1", font=20, justify="center")
+         # ----------------------- Harmonic Frame ----------------------- #
+        self.harmonic_frame = tk.Frame(self.root, padx=10, pady=20)
+        self.harmonic_frame.pack()
+
+        self.harmonic_text = tk.Label(self.harmonic_frame, text="Set Harmonic Number for SR830 1. Current: 1", font=20, justify="center")
         self.harmonic_text.pack()
 
-        self.harmonic_entry = tk.Entry(self.start_frame, width=10)
+        self.harmonic_entry = tk.Entry(self.harmonic_frame, width=10)
         self.harmonic_entry.pack()
 
-        self.harmonic_btn = tk.Button(self.start_frame, text="Enter", command=self.change_harmonic)
+        self.harmonic_btn = tk.Button(self.harmonic_frame, text="Enter", command=self.change_harmonic)
         self.harmonic_btn.pack(pady=5)
 
         # ----------------------- Output Frame ----------------------- #

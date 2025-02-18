@@ -75,14 +75,27 @@ class GUI:
         self.stop_btn = tk.Button(self.start_frame, text="Stop", command=self.stop, font=10)
         self.stop_btn.pack(side="right", padx=5)
 
-        self.harmonic_text = tk.Label(self.start_frame, text="Set Harmonic Number. Current: 1", font=20, justify="center")
+        # ----------------------- Harmonic Frame ----------------------- #
+        self.harmonic_frame = tk.Frame(self.root, padx=10, pady=20)
+        self.harmonic_frame.pack()
+
+        self.harmonic_text = tk.Label(self.harmonic_frame, text="Set Harmonic Number for SR830 1. Current: 1", font=20, justify="center")
         self.harmonic_text.pack()
 
-        self.harmonic_entry = tk.Entry(self.start_frame, width=10)
+        self.harmonic_entry = tk.Entry(self.harmonic_frame, width=10)
         self.harmonic_entry.pack()
 
-        self.harmonic_btn = tk.Button(self.start_frame, text="Enter", command=self.change_harmonic)
+        self.harmonic_btn = tk.Button(self.harmonic_frame, text="Enter", command=self.change_harmonic1)
         self.harmonic_btn.pack(pady=5)
+
+        self.harmonic2_text = tk.Label(self.harmonic_frame, text="Set Harmonic Number for SR830 2. Current: 1", font=20, justify="center")
+        self.harmonic2_text.pack()
+
+        self.harmonic2_entry = tk.Entry(self.harmonic_frame, width=10)
+        self.harmonic2_entry.pack()
+
+        self.harmonic2_btn = tk.Button(self.harmonic_frame, text="Enter", command=self.change_harmonic2)
+        self.harmonic2_btn.pack(pady=5)
 
         # ----------------------- Output Frame ----------------------- #
         self.output_frame = tk.Frame(self.root, padx=10, pady=20)
@@ -192,14 +205,21 @@ class GUI:
         self.client.close_server()
         sys.exit()
     
-    def change_harmonic(self):
+    def change_harmonic1(self):
         try:
             self.instrument_1.set_harmonic(int(self.harmonic_entry.get()))
-            self.instrument_2.set_harmonic(int(self.harmonic_entry.get()))
-            self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {self.harmonic_entry.get()}")
+            self.harmonic_text.configure(text=f"Set Harmonic Number for SR830 1. Current: {self.harmonic_entry.get()}")
             
         except:
             self.harmonic_text.configure(text="Error: enter 1, 2, or 3")
+
+    def change_harmonic2(self):
+        try:
+            self.instrument_2.set_harmonic(int(self.harmonic2_entry.get()))
+            self.harmonic2_text.configure(text=f"Set Harmonic Number for SR830 2. Current: {self.harmonic2_entry.get()}")
+            
+        except:
+            self.harmonic2_text.configure(text="Error: enter 1, 2, or 3")
 
     #  To change the type of plot from line plot to scatter plot or vice versa.
     def change_plot(self):
@@ -238,7 +258,8 @@ class GUI:
         self.collecting = True
 
     def update_gui(self, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field):
-        self.harmonic_text.configure(text=f"Set Harmonic Number. Current: {harm1}, {harm2}")
+        self.harmonic_text.configure(text=f"Set Harmonic Number for SR830 1. Current: {harm1}")
+        self.harmonic2_text.configure(text=f"Set Harmonic Number for SR830 2. Current: {harm2}")
         self.tree.insert("", "0", values = (self.time_value, harm1, harm2, voltage1, voltage2, freq1, freq2, channel11, channel12, channel21, channel22, temp, field))
         # self.plotter.update_plot(self.data_handler.data, self.x_option.get(), self.y_option.get())
 

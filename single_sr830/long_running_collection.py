@@ -18,11 +18,11 @@ current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
 
 # ------------------------ SET UP HERE ------------------------ #
 # Set file path name:
-name = 'tcwu-EIODevice-Ch1RT2' # default: nothing
+name = 'tcwu-EIODevice-Rload1MOhm-RT2' # default: nothing
 file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{name}{current_time}.csv"
 
 # Set harmonic number:
-harm_num = 2  # default: 1
+harm_num = 1  # default: 1
 # ------------------------ SET UP END ------------------------ #
 
 #  Initialize
