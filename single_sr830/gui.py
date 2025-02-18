@@ -11,7 +11,6 @@ from instrument import Instrument
 from datahandler import DataHandler
 from plotter import Plotter
 import threading
-import queue
 import sys
 import matplotlib.pyplot as plt
 import datetime

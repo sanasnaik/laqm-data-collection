@@ -5,8 +5,6 @@ Created on Mon Nov 18 14:42:07 2024
 """
 
 import pyvisa
-import time
-import MultiPyVu as mpv
 from pymeasure.instruments.srs import SR830
 import threading
 

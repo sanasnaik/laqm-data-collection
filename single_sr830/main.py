@@ -7,7 +7,6 @@ Past contributor: Keanu Shah
 Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 """
 import tkinter as tk
-import time
 import MultiPyVu as mpv
 import sys
 
