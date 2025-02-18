@@ -9,6 +9,7 @@ Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 import time
 import MultiPyVu as mpv
 import datetime
+import threading
 
 #  Separate clases to keep code modular!
 from instrument import Instrument
@@ -18,11 +19,12 @@ current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
 
 # ------------------------ SET UP HERE ------------------------ #
 # Set file path name:
-name = 'tcwu-EIODevice-Ch1RT2' # default: nothing
+name = 'tcwu-EIODevice-Rload1MOhm-RT2' # default: nothing
 file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{name}{current_time}.csv"
 
 # Set harmonic number:
-harm_num = 2  # default: 1
+harm_num_1 = 1  # for sr830 8, default: 1
+harm_num_2 = 1  # for sr830 9, default: 1
 # ------------------------ SET UP END ------------------------ #
 
 #  Initialize
@@ -33,27 +35,49 @@ with mpv.Server():
 
         # Init
         data_handler = DataHandler(file_path = file_path)
-        instrument = Instrument(client, data_handler)
+        instrument_1 = Instrument(client, data_handler)
+        instrument_2 = Instrument(client, data_handler)
         data_handler.write_header()
         time_value = 0
         try:
-            instrument.set_harmonic(harm_num)
+            instrument_1.set_harmonic(harm_num_1)
+            instrument_2.set_harmonic(harm_num_2)
         except:
             print("Error: enter 1, 2, or 3 for harmonic number.")
 
         # Immediately starts collecting data.
         while True:
-            harm = instrument.get_harmonic()
-            voltage = instrument.get_voltage()
-            freq = instrument.get_frequency()
-            channel1 = instrument.get_channel1()
-            channel2 = instrument.get_channel2()
-            temp, _ = instrument.client.get_temperature()
-            field, _ = instrument.client.get_field()
-            #instrument.autosens_thread()
+            # First lock-in
+            harm1 = instrument_1.get_harmonic()
+            voltage1 = instrument_1.get_voltage()
+            freq1 = instrument_1.get_frequency()
+            channel11 = instrument_1.get_channel1()
+            channel21 = instrument_1.get_channel2()
+            
+            # Second lock-in
+            harm2 = instrument_2.get_harmonic()
+            voltage2 = instrument_2.get_voltage()
+            freq2 = instrument_2.get_frequency()
+            channel12 = instrument_2.get_channel1()
+            channel22 = instrument_2.get_channel2()
 
-            data_handler.append_data(time_value, harm, voltage, freq, channel1, channel2, temp, field)
+            temp, _ = instrument_1.client.get_temperature()
+            field, _ = instrument_1.client.get_field()
 
+            data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
+
+            with instrument_1.autosens_lock:
+                if not instrument_1.autosens_thread_running:
+                    # Start a new autosens thread if the previous one has finished
+                    autosens_thread = threading.Thread(target = instrument_1.autosens, daemon = True)
+                    autosens_thread.start()
+            
+            with instrument_2.autosens_lock:
+                if not instrument_2.autosens_thread_running:
+                    # Start a new autosens thread if the previous one has finished
+                    autosens_thread = threading.Thread(target = instrument_2.autosens, daemon = True)
+                    autosens_thread.start()
+                    
             time_value += 0.3
             time_value = round(time_value, 1)
             time.sleep(0.3)

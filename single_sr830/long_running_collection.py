@@ -9,6 +9,7 @@ Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 import time
 import MultiPyVu as mpv
 import datetime
+import threading
 
 #  Separate clases to keep code modular!
 from instrument import Instrument
@@ -50,7 +51,12 @@ with mpv.Server():
             channel2 = instrument.get_channel2()
             temp, _ = instrument.client.get_temperature()
             field, _ = instrument.client.get_field()
-            #instrument.autosens_thread()
+
+            with instrument.autosens_lock:
+                if not instrument.autosens_thread_running:
+                    # Start a new autosens thread if the previous one has finished
+                    autosens_thread = threading.Thread(target = instrument.autosens, daemon = True)
+                    autosens_thread.start()
 
             data_handler.append_data(time_value, harm, voltage, freq, channel1, channel2, temp, field)
 
