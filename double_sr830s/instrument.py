@@ -52,7 +52,8 @@ class Instrument:
 
         # change sensitivity so that it increases senstivity when it is "0"
         elif int(self.pymeasure_instrument.ask("SENS?")) > 0:
-            while self.get_voltage() == 0 or self.get_channel1() == 0 or self.get_channel2() == 0:
+            retries = 0
+            while self.get_voltage() == 0 or self.get_channel1() == 0 or self.get_channel2() == 0 and retries < 10:
                 self.pymeasure_instrument.write('LIAE 2,1')
                 self.pymeasure_instrument.write("SENS%d" % (int(self.pymeasure_instrument.ask("SENS?")) - 1))
                 # time.sleep(5.0 * self.pymeasure_instrument.time_constant)
@@ -62,6 +63,7 @@ class Instrument:
                 if self.pymeasure_instrument.input_config in ('I (1 MOhm)', 'I (100 MOhm)'):
                     newsensitivity = newsensitivity * 1e6
                 self.sens = newsensitivity
+                retries += 1
                 
         with self.autosens_lock:
             self.autosens_thread_running = False

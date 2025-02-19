@@ -66,17 +66,12 @@ with mpv.Server():
 
             data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
 
-            with instrument_1.autosens_lock:
-                if not instrument_1.autosens_thread_running:
-                    # Start a new autosens thread if the previous one has finished
-                    autosens_thread = threading.Thread(target = instrument_1.autosens, daemon = True)
-                    autosens_thread.start()
-            
-            with instrument_2.autosens_lock:
-                if not instrument_2.autosens_thread_running:
-                    # Start a new autosens thread if the previous one has finished
-                    autosens_thread = threading.Thread(target = instrument_2.autosens, daemon = True)
-                    autosens_thread.start()
+            if not instrument_1.autosens_thread_running:
+                threading.Thread(target=instrument_1.autosens, daemon=True).start()
+                time.sleep(0.5)  # Small delay prevents conflicts
+
+            if not instrument_2.autosens_thread_running:
+                threading.Thread(target=instrument_2.autosens, daemon=True).start()
                     
             time_value += 0.3
             time_value = round(time_value, 1)
