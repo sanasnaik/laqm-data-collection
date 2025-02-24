@@ -68,7 +68,6 @@ with mpv.Server():
 
             if not instrument_1.autosens_thread_running:
                 threading.Thread(target=instrument_1.autosens, daemon=True).start()
-                time.sleep(0.5)  # Small delay prevents conflicts
 
             if not instrument_2.autosens_thread_running:
                 threading.Thread(target=instrument_2.autosens, daemon=True).start()

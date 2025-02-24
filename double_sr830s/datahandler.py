@@ -19,21 +19,21 @@ class DataHandler:
             self.csv_file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{self.current_time}.csv"
             
         self.fieldnames = ['Time', 'Harmonic_1', 'Harmonic_2', 'Voltage_1', 'Voltage_2', 'Frequency_1', 'Frequency_2', 'Channel1(X)_1', 'Channel1(X)_2', 'Channel2(Y)_1', 'Channel2(Y)_2', 'Temperature', 'Field']
-        self.data = {  
-            'Time': [],
-            'Harmonic1': [],
-            'Voltage1': [], 
-            'Frequency1': [], 
-            'Channel1(X)1': [], 
-            'Channel2(Y)1': [],
-            'Harmonic2': [],
-            'Voltage2': [], 
-            'Frequency2': [], 
-            'Channel1(X)2': [], 
-            'Channel2(Y)2': [],
-            'Temperature': [],
-            'Field': []
-        }
+        # self.data = {  
+        #     'Time': [],
+        #     'Harmonic1': [],
+        #     'Voltage1': [], 
+        #     'Frequency1': [], 
+        #     'Channel1(X)1': [], 
+        #     'Channel2(Y)1': [],
+        #     'Harmonic2': [],
+        #     'Voltage2': [], 
+        #     'Frequency2': [], 
+        #     'Channel1(X)2': [], 
+        #     'Channel2(Y)2': [],
+        #     'Temperature': [],
+        #     'Field': []
+        # }
         
         
     def write_to_csv(self, info):
@@ -68,17 +68,17 @@ class DataHandler:
 
         }
 
-        self.data['Time'].append(time)
-        self.data['Harmonic1'].append(harmonic1)
-        self.data['Voltage1'].append(voltage1)
-        self.data['Frequency1'].append(freq1)
-        self.data['Channel1(X)1'].append(float(channel11))
-        self.data['Channel2(Y)1'].append(float(channel21))
-        self.data['Harmonic2'].append(harmonic2)
-        self.data['Voltage2'].append(voltage2)
-        self.data['Frequency2'].append(freq2)
-        self.data['Channel1(X)2'].append(float(channel12))
-        self.data['Channel2(Y)2'].append(float(channel22))
-        self.data['Temperature'].append(temp)
-        self.data['Field'].append(field)
+        # self.data['Time'].append(time)
+        # self.data['Harmonic1'].append(harmonic1)
+        # self.data['Voltage1'].append(voltage1)
+        # self.data['Frequency1'].append(freq1)
+        # self.data['Channel1(X)1'].append(float(channel11))
+        # self.data['Channel2(Y)1'].append(float(channel21))
+        # self.data['Harmonic2'].append(harmonic2)
+        # self.data['Voltage2'].append(voltage2)
+        # self.data['Frequency2'].append(freq2)
+        # self.data['Channel1(X)2'].append(float(channel12))
+        # self.data['Channel2(Y)2'].append(float(channel22))
+        # self.data['Temperature'].append(temp)
+        # self.data['Field'].append(field)
         self.write_to_csv(info)
