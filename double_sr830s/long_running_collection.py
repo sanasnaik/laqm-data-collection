@@ -36,7 +36,7 @@ with mpv.Server():
         # Init
         data_handler = DataHandler(file_path = file_path)
         instrument_1 = Instrument(client, data_handler)
-        instrument_2 = Instrument(client, data_handler)
+        instrument_2 = Instrument(client, data_handler, 'GPIB0::9::INSTR')
         data_handler.write_header()
         time_value = 0
         try:
