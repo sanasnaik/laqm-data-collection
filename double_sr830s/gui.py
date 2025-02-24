@@ -283,6 +283,10 @@ class GUI:
             temp, _ = self.instrument_1.client.get_temperature()
             field, _ = self.instrument_1.client.get_field()
 
+            # Make sure only one instance is scheduled at a time
+            if self.data_collect_id:
+                self.root.after_cancel(self.data_collect_id)
+
             self.data_handler.append_data(self.time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
 
             # Second priorities -- autosensitivity thread and update GUI thread
