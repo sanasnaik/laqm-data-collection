@@ -46,32 +46,30 @@ with mpv.Server():
             print("Error: enter 1, 2, or 3 for harmonic number.")
 
         # Immediately starts collecting data.
-        while True:
-            # First lock-in
-            harm1 = instrument_1.get_harmonic()
-            voltage1 = instrument_1.get_voltage()
-            freq1 = instrument_1.get_frequency()
-            channel11 = instrument_1.get_channel1()
-            channel21 = instrument_1.get_channel2()
-            
-            # Second lock-in
-            harm2 = instrument_2.get_harmonic()
-            voltage2 = instrument_2.get_voltage()
-            freq2 = instrument_2.get_frequency()
-            channel12 = instrument_2.get_channel1()
-            channel22 = instrument_2.get_channel2()
+        try:
+            while True:
+                # First lock-in
+                harm1 = instrument_1.get_harmonic()
+                voltage1 = instrument_1.get_voltage()
+                freq1 = instrument_1.get_frequency()
+                channel11 = instrument_1.get_channel1()
+                channel21 = instrument_1.get_channel2()
+                
+                # Second lock-in
+                harm2 = instrument_2.get_harmonic()
+                voltage2 = instrument_2.get_voltage()
+                freq2 = instrument_2.get_frequency()
+                channel12 = instrument_2.get_channel1()
+                channel22 = instrument_2.get_channel2()
 
-            temp, _ = instrument_1.client.get_temperature()
-            field, _ = instrument_1.client.get_field()
+                temp, _ = instrument_1.client.get_temperature()
+                field, _ = instrument_1.client.get_field()
 
-            data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
+                data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
+                        
+                time_value += 0.3
+                time_value = round(time_value, 1)
+                time.sleep(0.3)
 
-            if not instrument_1.autosens_thread_running:
-                threading.Thread(target=instrument_1.autosens, daemon=True).start()
-
-            if not instrument_2.autosens_thread_running:
-                threading.Thread(target=instrument_2.autosens, daemon=True).start()
-                    
-            time_value += 0.3
-            time_value = round(time_value, 1)
-            time.sleep(0.3)
+        except Exception as e:
+            print(f"Error {e}")

@@ -199,6 +199,8 @@ class GUI:
         # self.canvas.draw()    
     
     def close(self):
+        self.instrument_1.stop()
+        self.instrument_2.stop()
         if self.data_collect_id:
             self.root.after_cancel(self.data_collect_id)
         self.root.destroy()
@@ -289,21 +291,9 @@ class GUI:
 
             self.data_handler.append_data(self.time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
 
-            # Second priorities -- autosensitivity thread and update GUI thread
+            # Second priorities -- update GUI thread
             self.root.after(0, self.update_gui, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
-
-            with self.instrument_1.autosens_lock:
-                if not self.instrument_1.autosens_thread_running:
-                    # Start a new autosens thread if the previous one has finished
-                    autosens_thread = threading.Thread(target = self.instrument_1.autosens, daemon = True)
-                    autosens_thread.start()
             
-            with self.instrument_2.autosens_lock:
-                if not self.instrument_2.autosens_thread_running:
-                    # Start a new autosens thread if the previous one has finished
-                    autosens_thread = threading.Thread(target = self.instrument_2.autosens, daemon = True)
-                    autosens_thread.start()
-            
-        self.time_value += 0.3
+        self.time_value += 0.5
         self.time_value = round(self.time_value, 1)
-        self.data_collect_id = self.root.after(300, self.data_collect)
+        self.data_collect_id = self.root.after(500, self.data_collect)
