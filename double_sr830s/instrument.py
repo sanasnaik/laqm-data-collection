@@ -24,23 +24,41 @@ class Instrument:
 
     #  Gets the amplitude of the sine output in volts
     def get_voltage(self):
-        return self.instrument.query_ascii_values('SLVL?')[0]
-    
-    #  Gets the frequency 
+        try:
+            return self.instrument.query_ascii_values('SLVL?')[0]
+        except Exception as e:
+            return f"Error getting voltage: {e}"
+
+    # Gets the frequency
     def get_frequency(self):
-        return self.instrument.query_ascii_values('FREQ?')[0]
-    
+        try:
+            return self.instrument.query_ascii_values('FREQ?')[0]
+        except Exception as e:
+            return f"Error getting frequency: {e}"
+
     def get_channel1(self):
-        return self.instrument.query_ascii_values("OUTP? 1")[0]
-    
+        try:
+            return self.instrument.query_ascii_values("OUTP? 1")[0]
+        except Exception as e:
+            return f"Error getting channel 1: {e}"
+
     def get_channel2(self):
-        return self.instrument.query_ascii_values("OUTP? 2")[0]
-    
+        try:
+            return self.instrument.query_ascii_values("OUTP? 2")[0]
+        except Exception as e:
+            return f"Error getting channel 2: {e}"
+
     def get_harmonic(self):
-        return self.instrument.query_ascii_values("HARM?")[0]
-    
+        try:
+            return self.instrument.query_ascii_values("HARM?")[0]
+        except Exception as e:
+            return f"Error getting harmonic: {e}"
+
     def set_harmonic(self, harmonic_num):
-        self.pymeasure_instrument.harmonic = harmonic_num
+        try:
+            self.pymeasure_instrument.harmonic = harmonic_num
+        except Exception as e:
+            return f"Error setting harmonic: {e}"
 
     #  Auto adjusts sensitivity
     def autosens(self):

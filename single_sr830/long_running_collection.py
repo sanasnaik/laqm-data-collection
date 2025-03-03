@@ -30,7 +30,7 @@ harm_num = 1  # default: 1
 #  Start the server.
 with mpv.Server():
     #  Start the client
-    with mpv.Client(socket_timeout = None) as client:
+    with mpv.Client(socket_timeout = 5000) as client:
 
         # Init
         data_handler = DataHandler(file_path = file_path)
@@ -49,8 +49,16 @@ with mpv.Server():
             freq = instrument.get_frequency()
             channel1 = instrument.get_channel1()
             channel2 = instrument.get_channel2()
-            temp, _ = instrument.client.get_temperature()
-            field, _ = instrument.client.get_field()
+
+            try:
+                temp, _ = client.get_temperature()
+            except Exception as e:
+                print("Couldn't get temperature data")
+            
+            try:
+                field, _ = client.get_field()
+            except Exception as e:
+                print("Couldn't get field data")
 
             with instrument.autosens_lock:
                 if not instrument.autosens_thread_running:

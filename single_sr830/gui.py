@@ -234,9 +234,17 @@ class GUI:
             freq = self.instrument.get_frequency()
             channel1 = self.instrument.get_channel1()
             channel2 = self.instrument.get_channel2()
-            temp, _ = self.instrument.client.get_temperature()
-            field, _ = self.instrument.client.get_field()
 
+            try:
+                temp, _ = self.client.get_temperature()
+            except Exception as e:
+                print("Couldn't get temperature data")
+            
+            try:
+                field, _ = self.client.get_field()
+            except Exception as e:
+                print("Couldn't get field data")
+                
             # Make sure only one instance is scheduled at a time
             if self.data_collect_id:
                 self.root.after_cancel(self.data_collect_id)

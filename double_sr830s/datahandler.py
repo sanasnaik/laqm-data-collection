@@ -49,7 +49,7 @@ class DataHandler:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(self.fieldnames)
 
-    def append_data(self, time, harmonic1, voltage1, freq1, channel11, channel21, harmonic2, voltage2, freq2, channel12, channel22, temp, field):
+    def append_data(self, time, harmonic1, voltage1, freq1, channel11, channel21, harmonic2, voltage2, freq2, channel12, channel22, temp = None, field = None):
         
         info = {
             "Time": time,

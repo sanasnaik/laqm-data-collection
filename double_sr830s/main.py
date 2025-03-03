@@ -21,7 +21,7 @@ from plotter import Plotter
 #  Start the server.
 with mpv.Server():
     #  Start the client
-    with mpv.Client(socket_timeout = None) as client:
+    with mpv.Client() as client:
 
         data_handler = DataHandler()
         instrument_1 = Instrument(client, data_handler)
