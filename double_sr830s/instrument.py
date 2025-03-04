@@ -36,6 +36,13 @@ class Instrument:
         except Exception as e:
             return f"Error getting frequency: {e}"
 
+    def set_frequency(self, freq):
+        try:
+            self.pymeasure_instrument.frequency = freq
+        except Exception as e:
+            print(f"Error setting frequency: {e}")        
+            
+
     def get_channel1(self):
         try:
             return self.instrument.query_ascii_values("OUTP? 1")[0]

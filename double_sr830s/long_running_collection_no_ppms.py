@@ -25,6 +25,10 @@ file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{name}{current_time}
 # Set harmonic number:
 harm_num_1 = 2  # for sr830 8, default: 1
 harm_num_2 = 2  # for sr830 9, default: 1
+
+# Set frequency in Hz:
+freq1 = 97.97  # for sr830 8
+freq2 = 97.97  # for sr830 9
 # ------------------------ SET UP END ------------------------ #
 
 # Init
@@ -41,6 +45,9 @@ try:
     instrument_2.set_harmonic(harm_num_2)
 except:
     print("Error: enter 1, 2, or 3 for harmonic number.")
+
+instrument_1.set_frequency(freq1)
+instrument_2.set_frequency(freq2)
 
 # Immediately starts collecting data.
 try:
