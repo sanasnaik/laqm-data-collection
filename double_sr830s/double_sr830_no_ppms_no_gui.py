@@ -1,17 +1,13 @@
 """
-Note: run this code file on its own for long-term collection. 
-Tkinter ends up freezing with too many threads running at once.
+Note: This file was created as a placeholder until we fix the PPMS connection and figure out why it randomly stops sending data to our program.
+This file only collects SR830 data, and sets zero values for PPMS data (temperature and magnetic field).
 
 Created on Monday February 10 2025
 Creator: Sana Naik
 Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 """
 import time
-import MultiPyVu as mpv
 import datetime
-import threading
-
-#  Separate clases to keep code modular!
 from instrument import Instrument
 from datahandler import DataHandler
 
@@ -37,17 +33,18 @@ instrument_1 = Instrument(None, data_handler)
 instrument_2 = Instrument(None, data_handler, 'GPIB0::9::INSTR')
 data_handler.write_header()
 time_value = 0
-temp = 0
-field = 0
 
 try:
     instrument_1.set_harmonic(harm_num_1)
     instrument_2.set_harmonic(harm_num_2)
 except:
-    print("Error: enter 1, 2, or 3 for harmonic number.")
+    print("Error setting harmonic number. Please enter 1, 2, or 3 for harmonic number.")
 
-instrument_1.set_frequency(freq1)
-instrument_2.set_frequency(freq2)
+try:
+    instrument_1.set_frequency(freq1)
+    instrument_2.set_frequency(freq2)
+except:
+    print("Error setting frequency. Please set a valid frequency value.")
 
 # Immediately starts collecting data.
 try:
@@ -66,7 +63,7 @@ try:
         channel12 = instrument_2.get_channel1()
         channel22 = instrument_2.get_channel2()
 
-        data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, temp, field)
+        data_handler.append_data(time_value, harm1, voltage1, freq1, channel11, channel21, harm2, voltage2, freq2, channel12, channel22, 0, 0)
                 
         time_value += 0.5
         time_value = round(time_value, 1)

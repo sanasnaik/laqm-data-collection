@@ -6,7 +6,6 @@ Creator: Sana Naik
 Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 """
 import time
-import MultiPyVu as mpv
 import datetime
 from instrument import Instrument
 from datahandler import DataHandler
