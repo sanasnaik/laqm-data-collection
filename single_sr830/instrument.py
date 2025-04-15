@@ -36,6 +36,12 @@ class Instrument:
         except Exception as e:
             return f"Error getting frequency: {e}"
 
+    def set_frequency(self, freq):
+        try:
+            self.pymeasure_instrument.frequency = freq
+        except Exception as e:
+            print(f"Error setting frequency: {e}")      
+
     def get_channel1(self):
         try:
             return self.instrument.query_ascii_values("OUTP? 1")[0]
@@ -65,10 +71,10 @@ class Instrument:
         """ Continuously runs autosens every 1 second in the background """
         while self.running:
             try:
-                if self.pymeasure_instrument.is_out_of_range():
-                    self.pymeasure_instrument.quick_range()
+                if int(self.pymeasure_instrument.ask("LIAS?2").strip()) == 1:
+                        self.pymeasure_instrument.quick_range()
 
-                elif int(self.pymeasure_instrument.ask("SENS?")) > 0:
+                elif int(self.pymeasure_instrument.ask("SENS?").strip()) > 0:
                     retries = 0
                     while self.get_voltage() == 0 or self.get_channel1() == 0 or self.get_channel2() == 0 and retries < 10:
                         self.pymeasure_instrument.write('LIAE 2,1')
@@ -81,9 +87,8 @@ class Instrument:
                             newsensitivity = newsensitivity * 1e6
                         self.sens = newsensitivity
                         retries += 1
-
             except Exception as e:
-                print(f"[Error] Autosens failed: {e}")
+                print(f"Error: {e}")
 
             time.sleep(1)
 
