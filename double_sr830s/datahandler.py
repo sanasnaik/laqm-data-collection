@@ -81,4 +81,4 @@ class DataHandler:
         # self.data['Channel2(Y)2'].append(float(channel22))
         # self.data['Temperature'].append(temp)
         # self.data['Field'].append(field)
-        self.write_to_csv(info)
+        # self.write_to_csv(info)

@@ -152,7 +152,7 @@ class GUI:
         
         self.tree.pack()
 
-        # ----------------------- Plotting stuff ----------------------- #
+        # # ----------------------- Plotting stuff ----------------------- #
         # self.right_frame = tk.Frame(self.output_frame, padx=10, pady=20)
         # self.right_frame.pack(side="right")
 
@@ -193,7 +193,7 @@ class GUI:
         # self.autoscale_btn = tk.Button(self.toolbar_frame, text = "Toggle Autoscale", command = self.plotter.toggle_autoscale)
         # self.autoscale_btn.pack()
 
-        # Cursor snap to data point - disabled for now
+        # #Cursor snap to data point - disabled for now
         # self.fig.canvas.mpl_connect('motion_notify_event', self.plotter.on_mouse_move)
         
         # self.canvas.draw()    

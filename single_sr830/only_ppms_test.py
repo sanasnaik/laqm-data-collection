@@ -1,19 +1,18 @@
 """
-Note: run this code file on its own for long-term collection. 
-Tkinter ends up freezing with too many threads running at once.
+Note: This file is created to test the PPMS connection. Currently the program stops randomly in the middle of running.
+We have an email thread with Quantum Designs discussing why this could be happening.
+This file can be used to create PPMS "QdMultiVu" logs to hopefully help diagnose this issue.
 
-Created on Monday February 10 2025
 Creator: Sana Naik
 Under supervision of: Professor Jak Chakalian, Tsung-Chi Wu
 """
 import time
 import MultiPyVu as mpv
 
-# ------------------------ SET UP END ------------------------ #
-
 #  Initialize
 #  Start the server.
 with mpv.Server():
+    
     #  Start the client
     with mpv.Client(socket_timeout = 5000) as client:
         print('Time, Harmonic, Voltage, Frequency, Channel1(X), Channel2(Y), Temperature, Field')
