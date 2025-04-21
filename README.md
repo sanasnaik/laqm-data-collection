@@ -1,2 +1,2 @@
 Graphical user interface for data collection and plotting to be used at Rutgers' Laboratory of Artifical Quantum Matter.
-Collects data from the Lock-In Amplifier which is synchronized with the Physical Property Measurement System machine using the MultiPyVu library. Will assist researchers in observing the unique properties of quantum matter (their resistivities, etc.) under various temperature, magnetic, electrical, and pressure conditions.
+Collects data from the Lock-In Amplifier which is synchronized with the Physical Property Measurement System machine using the MultiPyVu library. Used by physicists at LAQM to observe the unique non-linear transport properties of quantum matter under various temperature, magnetic, electrical, and pressure conditions.

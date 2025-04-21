@@ -15,16 +15,16 @@ current_time = datetime.datetime.now().strftime("%m-%d-%Y %I.%M%p")
 
 # ------------------------ SET UP HERE ------------------------ #
 # Set file path name:
-name = 'tcwu-#3_MR_80K-130K_1w_137.77Hz_2ndtry' # default: nothing
+name = 'tcwu-#6_MR_80K-130K_3w_37.37Hz_1sttry' # default: nothing
 file_path = f"C:\\Users\\ppms\\Documents\\CSV Data Outputs\\{name}{current_time}.csv"
 
 # Set harmonic number:
-harm_num_1 = 1  # for sr830 8, default: 1
-harm_num_2 = 1  # for sr830 9, default: 1
+harm_num_1 = 3 # for sr830 8, default: 1
+harm_num_2 = 3  # for sr830 9, default: 1
 
 # Set frequency in Hz:
-freq1 = 137.77  # for sr830 8
-freq2 = 137.77  # for sr830 9
+freq1 = 37.37  # for sr830 8
+freq2 = 37.37  # for sr830 9
 # ------------------------ SET UP END ------------------------ #
 
 # Init
