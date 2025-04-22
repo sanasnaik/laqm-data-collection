@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 18 14:41:53 2024
-
 @author: laqm
 """
 
