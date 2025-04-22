@@ -1,6 +1,5 @@
 """
-Note: run this code file on its own for long-term collection. 
-Tkinter ends up freezing with too many threads running at once.
+No GUI
 
 Created on Monday February 10 2025
 Creator: Sana Naik
